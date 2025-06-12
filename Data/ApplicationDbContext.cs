@@ -362,12 +362,11 @@ namespace CMS.Data
                 .HasIndex(ur => ur.UserId);
 
             modelBuilder.Entity<AuditLog>()
-                .HasIndex(a => a.UserID); // Chỉ mục cho UserID
+                .HasIndex(a => a.UserID);
 
             modelBuilder.Entity<AuditLog>()
-                .HasIndex(a => a.CreateDate); // Chỉ mục cho CreateDate
+                .HasIndex(a => a.CreateDate);
 
-            // Chỉ mục composite (nếu cần truy vấn kết hợp UserID và CreateDate)
             modelBuilder.Entity<AuditLog>()
                 .HasIndex(a => new { a.UserID, a.CreateDate });
 

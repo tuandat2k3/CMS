@@ -15,26 +15,61 @@ namespace CMS.Pages.Manager
 
         public DepartmentModel(ApplicationDbContext context) => _context = context;
 
-        // Sử dụng Dictionary để lưu các phòng ban theo chi nhánh
         public Dictionary<Branch, List<Department>> DepartmentsByBranch { get; set; } = new();
+        public List<Branch> Branches { get; set; } = new();
+        public int? SelectedBranchId { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string branchId)
         {
-            // Lấy danh sách phòng ban và chi nhánh
-            var departments = await _context.Departments
-                .Include(d => d.Branch)
+            // Lấy danh sách chi nhánh cho combobox
+            Branches = await _context.Branches
+                .Include(b => b.Company)
+                .ThenInclude(c => c.Corporation)
                 .ToListAsync();
+
+            if (!Branches.Any() && branchId != "none")
+            {
+                ModelState.AddModelError("", "No branches found in the system.");
+            }
+
+            // Lấy danh sách phòng ban
+            var departmentsQuery = _context.Departments
+                .Include(d => d.Branch)
+                .ThenInclude(b => b.Company)
+                .ThenInclude(c => c.Corporation)
+                .AsQueryable();
+
+            // Lọc theo chi nhánh nếu có branchId
+            if (branchId == "none")
+            {
+                departmentsQuery = departmentsQuery.Where(d => d.BranchID == null);
+            }
+            else if (int.TryParse(branchId, out int parsedBranchId) && parsedBranchId != 0)
+            {
+                departmentsQuery = departmentsQuery.Where(d => d.BranchID == parsedBranchId);
+                SelectedBranchId = parsedBranchId;
+            }
+            else
+            {
+                SelectedBranchId = null; // Mặc định là "All Branches"
+            }
+
+            var departments = await departmentsQuery.ToListAsync();
 
             // Nhóm phòng ban theo chi nhánh
             DepartmentsByBranch = departments
-                .GroupBy(d => d.Branch ?? new Branch { BranchName = "No Branch" }) // Xử lý trường hợp không có chi nhánh
+                .GroupBy(d => d.Branch ?? new Branch { BranchName = "No Branch", AutoID = 0 })
                 .ToDictionary(g => g.Key, g => g.ToList());
+
+            return Page();
         }
 
         public async Task<IActionResult> OnGetDetailsAsync(int id)
         {
             var department = await _context.Departments
                 .Include(d => d.Branch)
+                .ThenInclude(b => b.Company)
+                .ThenInclude(c => c.Corporation)
                 .FirstOrDefaultAsync(d => d.AutoID == id);
 
             if (department == null)
@@ -44,13 +79,14 @@ namespace CMS.Pages.Manager
 
             return new JsonResult(new
             {
-                department.AutoID,
-                department.DepartmentName,
-                department.DepartmentSymbol,
-                department.DepartmentDescription,
-                department.Representative,
-                department.IsActive,
-                BranchName = department.Branch?.BranchName
+                departmentName = department.DepartmentName,
+                departmentSymbol = department.DepartmentSymbol,
+                departmentDescription = department.DepartmentDescription,
+                representative = department.Representative,
+                isActive = department.IsActive,
+                branchName = department.Branch?.BranchName,
+                companyName = department.Branch?.Company?.CompanyName,
+                corporationName = department.Branch?.Company?.Corporation?.CorporationName
             });
         }
     }

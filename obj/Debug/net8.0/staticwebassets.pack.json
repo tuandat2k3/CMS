@@ -5,6 +5,14 @@
       "PackagePath": "staticwebassets\\CMS.m0eis072y2.bundle.scp.css"
     },
     {
+      "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\MyContract.js",
+      "PackagePath": "staticwebassets\\Scripts\\MyContract.js"
+    },
+    {
+      "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\PendingContract.js",
+      "PackagePath": "staticwebassets\\Scripts\\PendingContract.js"
+    },
+    {
       "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
@@ -1149,6 +1157,10 @@
       "PackagePath": "staticwebassets\\uploads\\1061_subs3.jpg"
     },
     {
+      "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1062_1061_subs2.jpg",
+      "PackagePath": "staticwebassets\\uploads\\1062_1061_subs2.jpg"
+    },
+    {
       "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1063_Subs1.jpg",
       "PackagePath": "staticwebassets\\uploads\\1063_Subs1.jpg"
     },
@@ -1159,6 +1171,10 @@
     {
       "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1064_subs2.jpg",
       "PackagePath": "staticwebassets\\uploads\\1064_subs2.jpg"
+    },
+    {
+      "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1068_Danh_muc_hinh_chinh_sua.docx",
+      "PackagePath": "staticwebassets\\uploads\\1068_Danh_muc_hinh_chinh_sua.docx"
     },
     {
       "Id": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\33_Subs1.jpg",

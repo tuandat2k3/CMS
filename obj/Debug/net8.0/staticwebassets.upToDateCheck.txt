@@ -148,6 +148,8 @@ wwwroot\lib\jquery-validation\LICENSE.md
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js
 wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+wwwroot\Scripts\MyContract.js
+wwwroot\Scripts\PendingContract.js
 wwwroot\src\assets\img\AdminLTEFullLogo.png
 wwwroot\src\assets\img\AdminLTELogo.png
 wwwroot\src\assets\img\avatar.png
@@ -284,9 +286,11 @@ wwwroot\src\utils\index.js
 wwwroot\uploads\1061_subs2.jpg
 wwwroot\uploads\1061_subs3.jpg
 wwwroot\uploads\1061_Subs4.jpg
+wwwroot\uploads\1062_1061_subs2.jpg
 wwwroot\uploads\1063_Subs1.jpg
 wwwroot\uploads\1063_subs2.jpg
 wwwroot\uploads\1064_subs2.jpg
+wwwroot\uploads\1068_Danh_muc_hinh_chinh_sua.docx
 wwwroot\uploads\33_Subs1.jpg
 wwwroot\uploads\36_flowchart-AuditLogs.png
 wwwroot\uploads\36_HĐ-ThueGTGT.jpg

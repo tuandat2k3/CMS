@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "SJcUObUSql4tuN9vRHLfpO7ZnOxmQ0TP/UBMin5MBzo=",
+  "Hash": "S6xn7GEF7NL230FT+55Wv9QxWDSPeBfjeeIWqFT6zDM=",
   "Source": "CMS",
   "BasePath": "_content/CMS",
   "Mode": "Default",
@@ -3209,6 +3209,48 @@
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
     },
     {
+      "Identity": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\MyContract.js",
+      "SourceId": "CMS",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\",
+      "BasePath": "_content/CMS",
+      "RelativePath": "Scripts/MyContract#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "fvk9xctqps",
+      "Integrity": "65I0/wbCdNcguKZGqz6xvAczP3LTr3TEnUrPiZd64a4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Scripts\\MyContract.js"
+    },
+    {
+      "Identity": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\PendingContract.js",
+      "SourceId": "CMS",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\",
+      "BasePath": "_content/CMS",
+      "RelativePath": "Scripts/PendingContract#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "d7etht0exm",
+      "Integrity": "100iYeh4K0XNZrdsCi1YetumngK+xnxQ0Fept8/Ub/8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Scripts\\PendingContract.js"
+    },
+    {
       "Identity": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\src\\assets\\img\\AdminLTEFullLogo.png",
       "SourceId": "CMS",
       "SourceType": "Discovered",
@@ -6065,6 +6107,27 @@
       "OriginalItemSpec": "wwwroot\\uploads\\1061_Subs4.jpg"
     },
     {
+      "Identity": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1062_1061_subs2.jpg",
+      "SourceId": "CMS",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\",
+      "BasePath": "_content/CMS",
+      "RelativePath": "uploads/1062_1061_subs2#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "v5dptig3hn",
+      "Integrity": "45PRJSmZ/hw5E/GDpoT82u5AApYXatOJ55jkh5QQQlc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\1062_1061_subs2.jpg"
+    },
+    {
       "Identity": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1063_Subs1.jpg",
       "SourceId": "CMS",
       "SourceType": "Discovered",
@@ -6126,6 +6189,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\1064_subs2.jpg"
+    },
+    {
+      "Identity": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1068_Danh_muc_hinh_chinh_sua.docx",
+      "SourceId": "CMS",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\",
+      "BasePath": "_content/CMS",
+      "RelativePath": "uploads/1068_Danh_muc_hinh_chinh_sua#[.{fingerprint}]?.docx",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "xnqt66cb6a",
+      "Integrity": "w7XBZI273yOWCjfV1pf4MklWqMQ36JscvHwkpbxz5xU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\1068_Danh_muc_hinh_chinh_sua.docx"
     },
     {
       "Identity": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\33_Subs1.jpg",
@@ -6908,7 +6992,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 04:17:03 GMT"
+          "Value": "Thu, 12 Jun 2025 07:21:31 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6945,7 +7029,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 04:17:03 GMT"
+          "Value": "Thu, 12 Jun 2025 07:21:31 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6990,7 +7074,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 04:17:03 GMT"
+          "Value": "Thu, 12 Jun 2025 07:21:31 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -7035,7 +7119,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 26 May 2025 04:17:03 GMT"
+          "Value": "Thu, 12 Jun 2025 07:21:31 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -19350,6 +19434,170 @@
       ]
     },
     {
+      "Route": "Scripts/MyContract.fvk9xctqps.js",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\MyContract.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7156"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"65I0/wbCdNcguKZGqz6xvAczP3LTr3TEnUrPiZd64a4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 06:57:06 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "fvk9xctqps"
+        },
+        {
+          "Name": "label",
+          "Value": "Scripts/MyContract.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-65I0/wbCdNcguKZGqz6xvAczP3LTr3TEnUrPiZd64a4="
+        }
+      ]
+    },
+    {
+      "Route": "Scripts/MyContract.js",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\MyContract.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "7156"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"65I0/wbCdNcguKZGqz6xvAczP3LTr3TEnUrPiZd64a4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 06:57:06 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-65I0/wbCdNcguKZGqz6xvAczP3LTr3TEnUrPiZd64a4="
+        }
+      ]
+    },
+    {
+      "Route": "Scripts/PendingContract.d7etht0exm.js",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\PendingContract.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "20672"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"100iYeh4K0XNZrdsCi1YetumngK+xnxQ0Fept8/Ub/8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 06:53:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "d7etht0exm"
+        },
+        {
+          "Name": "label",
+          "Value": "Scripts/PendingContract.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-100iYeh4K0XNZrdsCi1YetumngK+xnxQ0Fept8/Ub/8="
+        }
+      ]
+    },
+    {
+      "Route": "Scripts/PendingContract.js",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\Scripts\\PendingContract.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "20672"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"100iYeh4K0XNZrdsCi1YetumngK+xnxQ0Fept8/Ub/8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 06:53:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-100iYeh4K0XNZrdsCi1YetumngK+xnxQ0Fept8/Ub/8="
+        }
+      ]
+    },
+    {
       "Route": "src/assets/img/AdminLTEFullLogo.0gtvjjsegk.png",
       "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\src\\assets\\img\\AdminLTEFullLogo.png",
       "Selectors": [],
@@ -30502,6 +30750,88 @@
       ]
     },
     {
+      "Route": "uploads/1062_1061_subs2.jpg",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1062_1061_subs2.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "37151"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"45PRJSmZ/hw5E/GDpoT82u5AApYXatOJ55jkh5QQQlc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Jun 2025 07:45:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-45PRJSmZ/hw5E/GDpoT82u5AApYXatOJ55jkh5QQQlc="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/1062_1061_subs2.v5dptig3hn.jpg",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1062_1061_subs2.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "37151"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"45PRJSmZ/hw5E/GDpoT82u5AApYXatOJ55jkh5QQQlc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Jun 2025 07:45:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "v5dptig3hn"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/1062_1061_subs2.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-45PRJSmZ/hw5E/GDpoT82u5AApYXatOJ55jkh5QQQlc="
+        }
+      ]
+    },
+    {
       "Route": "uploads/1063_Subs1.jpg",
       "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1063_Subs1.jpg",
       "Selectors": [],
@@ -30744,6 +31074,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-45PRJSmZ/hw5E/GDpoT82u5AApYXatOJ55jkh5QQQlc="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/1068_Danh_muc_hinh_chinh_sua.docx",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1068_Danh_muc_hinh_chinh_sua.docx",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59945"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"w7XBZI273yOWCjfV1pf4MklWqMQ36JscvHwkpbxz5xU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 03:28:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-w7XBZI273yOWCjfV1pf4MklWqMQ36JscvHwkpbxz5xU="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/1068_Danh_muc_hinh_chinh_sua.xnqt66cb6a.docx",
+      "AssetFile": "C:\\Users\\tuand\\source\\repos\\CMS\\wwwroot\\uploads\\1068_Danh_muc_hinh_chinh_sua.docx",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "59945"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"w7XBZI273yOWCjfV1pf4MklWqMQ36JscvHwkpbxz5xU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 03:28:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xnqt66cb6a"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/1068_Danh_muc_hinh_chinh_sua.docx"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-w7XBZI273yOWCjfV1pf4MklWqMQ36JscvHwkpbxz5xU="
         }
       ]
     },
