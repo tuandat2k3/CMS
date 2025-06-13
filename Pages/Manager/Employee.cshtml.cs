@@ -55,5 +55,15 @@ namespace CMS.Pages.Manager
                 CompanyName = employee.Company?.CompanyName
             });
         }
+
+        //them 
+
+        //sua
+
+        //xoa
+
+        //Thang or giang cap(dua vao rolename)
+
+
     }
 }

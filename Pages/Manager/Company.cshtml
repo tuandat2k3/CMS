@@ -176,6 +176,10 @@
                                 <input type="text" class="form-control" id="editRepresentative" name="Representative">
                             </div>
                             <div class="mb-3">
+                                <label for="editCorporation" class="form-label">Corporation</label>
+                                <input type="text" class="form-control" id="editCorporation" disabled>
+                            </div>
+                            <div class="mb-3">
                                 <label for="editIsActive" class="form-label">IsActive</label>
                                 <select class="form-control" id="editIsActive" name="IsActive">
                                     <option value="true">Yes</option>
@@ -249,17 +253,21 @@
                 type: 'GET',
                 data: { id: companyId },
                 success: function (data) {
-                    $('#detailName').text(data.companyName || 'N/A');
-                    $('#detailSymbol').text(data.companySymbol || 'N/A');
-                    $('#detailAddress').text(data.address || 'N/A');
-                    $('#detailCity').text(data.city || 'N/A');
-                    $('#detailCountry').text(data.country || 'N/A');
-                    $('#detailPhone').text(data.phone || 'N/A');
-                    $('#detailHomePhone').text(data.homePhone || 'N/A');
-                    $('#detailRepresentative').text(data.representative || 'N/A');
-                    $('#detailIsActive').text(data.isActive ? 'Có' : 'Không');
-                    $('#detailCorporation').text(data.corporationName || 'N/A');
-                    $('#companyDetailsModal').modal('show');
+                    if (data.success) {
+                        $('#detailName').text(data.company.companyName || 'N/A');
+                        $('#detailSymbol').text(data.company.companySymbol || 'N/A');
+                        $('#detailAddress').text(data.company.address || 'N/A');
+                        $('#detailCity').text(data.company.city || 'N/A');
+                        $('#detailCountry').text(data.company.country || 'N/A');
+                        $('#detailPhone').text(data.company.phone || 'N/A');
+                        $('#detailHomePhone').text(data.company.homePhone || 'N/A');
+                        $('#detailRepresentative').text(data.company.representative || 'N/A');
+                        $('#detailIsActive').text(data.company.isActive ? 'Có' : 'Không');
+                        $('#detailCorporation').text(data.company.corporationName || 'N/A');
+                        $('#companyDetailsModal').modal('show');
+                    } else {
+                        alert(data.message || 'Lỗi khi tải chi tiết công ty.');
+                    }
                 },
                 error: function () {
                     alert('Lỗi khi tải chi tiết công ty.');
@@ -293,7 +301,7 @@
 
                     const result = await response.json();
                     if (response.ok && result.success) {
-                        alert('Xóa công ty thành công');
+                        alert(result.message || 'Xóa công ty thành công');
                         window.location.reload();
                     } else {
                         alert(result.message || 'Lỗi khi xóa công ty');
@@ -313,17 +321,22 @@
                         type: 'GET',
                         data: { id: companyId },
                         success: function (data) {
-                            $('#editAutoID').val(data.autoID);
-                            $('#editCompanyName').val(data.companyName || '');
-                            $('#editCompanySymbol').val(data.companySymbol || '');
-                            $('#editAddress').val(data.address || '');
-                            $('#editCity').val(data.city || '');
-                            $('#editCountry').val(data.country || '');
-                            $('#editPhone').val(data.phone || '');
-                            $('#editHomePhone').val(data.homePhone || '');
-                            $('#editRepresentative').val(data.representative || '');
-                            $('#editCorporationID').val(data.corporationID || '');
-                            $('#editIsActive').val(data.isActive ? 'true' : 'false');
+                            if (data.success) {
+                                $('#editAutoID').val(data.company.autoID);
+                                $('#editCompanyName').val(data.company.companyName || '');
+                                $('#editCompanySymbol').val(data.company.companySymbol || '');
+                                $('#editAddress').val(data.company.address || '');
+                                $('#editCity').val(data.company.city || '');
+                                $('#editCountry').val(data.company.country || '');
+                                $('#editPhone').val(data.company.phone || '');
+                                $('#editHomePhone').val(data.company.homePhone || '');
+                                $('#editRepresentative').val(data.company.representative || '');
+                                $('#editCorporation').val(data.company.corporationName || '');
+                                $('#editIsActive').val(data.company.isActive ? 'true' : 'false');
+                                $('#editCompanyModal').modal('show');
+                            } else {
+                                alert(data.message || 'Lỗi khi tải dữ liệu để chỉnh sửa.');
+                            }
                         },
                         error: function () {
                             alert('Lỗi khi tải dữ liệu để chỉnh sửa.');
@@ -338,7 +351,6 @@
                 const formData = new FormData(this);
                 const data = Object.fromEntries(formData);
                 data.IsActive = data.IsActive === 'true';
-                data.CorporationID = data.CorporationID ? parseInt(data.CorporationID) : null;
 
                 try {
                     const response = await fetch('/Manager/Company?handler=AddCompany', {
@@ -352,7 +364,7 @@
 
                     const result = await response.json();
                     if (response.ok && result.success) {
-                        alert('Thêm công ty thành công');
+                        alert(result.message || 'Thêm công ty thành công');
                         window.location.reload();
                     } else {
                         alert(result.message || 'Lỗi khi thêm công ty');
@@ -370,7 +382,6 @@
                 const data = Object.fromEntries(formData);
                 data.AutoID = parseInt(data.AutoID);
                 data.IsActive = data.IsActive === 'true';
-                data.CorporationID = data.CorporationID ? parseInt(data.CorporationID) : null;
 
                 try {
                     const response = await fetch('/Manager/Company?handler=UpdateCompany', {
@@ -384,7 +395,7 @@
 
                     const result = await response.json();
                     if (response.ok && result.success) {
-                        alert('Cập nhật công ty thành công');
+                        alert(result.message || 'Cập nhật công ty thành công');
                         window.location.reload();
                     } else {
                         alert(result.message || 'Lỗi khi cập nhật công ty');
