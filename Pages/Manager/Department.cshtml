@@ -7,17 +7,27 @@
 
 <h1>Department List</h1>
 
+<<<<<<< HEAD
 <!-- Nút thêm và dropdown chọn chi nhánh trên cùng một hàng -->
 <div class="row mb-3 align-items-end">
     <div class="col-md-4">
         <label for="branchSelect" class="form-label">Select Branch</label>
         <select id="branchSelect" class="form-select" onchange="filterByBranch()">
             <option value="all" selected="@(Model.SelectedBranchId == null && HttpContext.Request.Query["branchId"] != "none" ? "selected" : null)">---All Branches---</option>
+=======
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label for="branchSelect" class="form-label">Select Branch</label>
+        <select id="branchSelect" class="form-select" onchange="filterByBranch()">
+            <option value="all" selected="@(Model.SelectedBranchId == null && HttpContext.Request.Query["branchId"] != "none" ? "selected" : null)">All Branches</option>
+            <option value="none" selected="@(HttpContext.Request.Query["branchId"] == "none" ? "selected" : null)">No Branch</option>
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
             @foreach (var branch in Model.Branches)
             {
                 <option value="@branch.AutoID" selected="@(Model.SelectedBranchId == branch.AutoID ? "selected" : null)">@branch.BranchName</option>
             }
         </select>
+<<<<<<< HEAD
     </div>
     <div class="col-md-8 text-end">
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">Add New Department</button>
@@ -41,15 +51,36 @@
 }
 
 <!-- Danh sách phòng ban -->
+=======
+    </div>
+</div>
+
+@if (ModelState.ErrorCount > 0)
+{
+    <div class="alert alert-warning" role="alert">
+        @foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
 <div class="row">
     <div class="col-md-12">
         @if (Model.DepartmentsByBranch.Any())
         {
             @foreach (var branch in Model.DepartmentsByBranch)
             {
+<<<<<<< HEAD
                 <h3>@(branch.Key.BranchName)</h3>
                 <table class="table table-striped">
                     <thead class="table-primary">
+=======
+                <h3>@(branch.Key.BranchName ?? "No Branch")</h3>
+                <table class="table table-striped">
+                    <thead>
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                         <tr>
                             <th>Name</th>
                             <th>Symbol</th>
@@ -68,12 +99,15 @@
                                     <button class="btn btn-primary btn-sm" onclick="showDetails(@department.AutoID)">
                                         <i class="bi bi-eye-fill"></i>
                                     </button>
+<<<<<<< HEAD
                                     <button class="btn btn-warning btn-sm edit-department" data-id="@department.AutoID" data-bs-toggle="modal" data-bs-target="#editDepartmentModal">
                                         <i class="bi bi-pencil-fill"></i>
                                     </button>
                                     <button class="btn btn-danger btn-sm delete-department" data-id="@department.AutoID" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal">
                                         <i class="bi bi-trash"></i>
                                     </button>
+=======
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                                 </td>
                             </tr>
                         }
@@ -223,6 +257,7 @@
                     </div>
                 </div>
                 <div id="detailContent">
+<<<<<<< HEAD
                     <div class="row">
                         <div class="col-md-6">
                             <p><strong>Name:</strong> <span id="detailName"></span></p>
@@ -241,6 +276,16 @@
                             <p><strong>Last Modified Date:</strong> <span id="detailLastModifiedDate"></span></p>
                         </div>
                     </div>
+=======
+                    <p><strong>Name:</strong> <span id="detailName"></span></p>
+                    <p><strong>Symbol:</strong> <span id="detailSymbol"></span></p>
+                    <p><strong>Description:</strong> <span id="detailDescription"></span></p>
+                    <p><strong>Representative:</strong> <span id="detailRepresentative"></span></p>
+                    <p><strong>Active:</strong> <span id="detailIsActive"></span></p>
+                    <p><strong>Branch:</strong> <span id="detailBranch"></span></p>
+                    <p><strong>Company:</strong> <span id="detailCompany"></span></p>
+                    <p><strong>Corporation:</strong> <span id="detailCorporation"></span></p>
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                 </div>
             </div>
             <div class="modal-footer">
@@ -282,6 +327,7 @@
                 type: 'GET',
                 data: { id: departmentId },
                 success: function (data) {
+<<<<<<< HEAD
                     if (data.success) {
                         $('#detailName').text(data.department.departmentName || 'N/A');
                         $('#detailSymbol').text(data.department.departmentSymbol || 'N/A');
@@ -303,11 +349,28 @@
                         $('#detailContent').show();
                         alert(data.message || 'Lỗi khi tải chi tiết phòng ban.');
                     }
+=======
+                    $('#detailName').text(data.departmentName || 'N/A');
+                    $('#detailSymbol').text(data.departmentSymbol || 'N/A');
+                    $('#detailDescription').text(data.departmentDescription || 'N/A');
+                    $('#detailRepresentative').text(data.representative || 'N/A');
+                    $('#detailIsActive').text(data.isActive ? 'Yes' : 'No');
+                    $('#detailBranch').text(data.branchName || 'N/A');
+                    $('#detailCompany').text(data.companyName || 'N/A');
+                    $('#detailCorporation').text(data.corporationName || 'N/A');
+                    $('#loadingSpinner').hide();
+                    $('#detailContent').show();
+                    $('#departmentDetailsModal').modal('show');
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                 },
                 error: function () {
                     $('#loadingSpinner').hide();
                     $('#detailContent').show();
+<<<<<<< HEAD
                     alert('Lỗi khi tải chi tiết phòng ban.');
+=======
+                    alert('Error loading department details.');
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                 }
             });
         }
@@ -316,6 +379,7 @@
             var branchId = $('#branchSelect').val();
             window.location.href = '@Url.Page("/Manager/Department")' + '?branchId=' + branchId;
         }
+<<<<<<< HEAD
 
         document.addEventListener('DOMContentLoaded', function () {
             // Xử lý modal xóa
@@ -449,5 +513,7 @@
                 }
             });
         });
+=======
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
     </script>
 }

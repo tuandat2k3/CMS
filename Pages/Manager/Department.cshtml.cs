@@ -19,6 +19,7 @@ namespace CMS.Pages.Manager
         private readonly ILogger<DepartmentModel> _logger;
         public string? ErrorMessage { get; set; }
 
+<<<<<<< HEAD
         public DepartmentModel(ApplicationDbContext context, ILogger<DepartmentModel> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -101,11 +102,72 @@ namespace CMS.Pages.Manager
                 ErrorMessage = $"Đã xảy ra lỗi khi tải dữ liệu: {ex.Message}";
                 return Page();
             }
+=======
+        public DepartmentModel(ApplicationDbContext context) => _context = context;
+
+        public Dictionary<Branch, List<Department>> DepartmentsByBranch { get; set; } = new();
+        public List<Branch> Branches { get; set; } = new();
+        public int? SelectedBranchId { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(string branchId)
+        {
+            // Lấy danh sách chi nhánh cho combobox
+            Branches = await _context.Branches
+                .Include(b => b.Company)
+                .ThenInclude(c => c.Corporation)
+                .ToListAsync();
+
+            if (!Branches.Any() && branchId != "none")
+            {
+                ModelState.AddModelError("", "No branches found in the system.");
+            }
+
+            // Lấy danh sách phòng ban
+            var departmentsQuery = _context.Departments
+                .Include(d => d.Branch)
+                .ThenInclude(b => b.Company)
+                .ThenInclude(c => c.Corporation)
+                .AsQueryable();
+
+            // Lọc theo chi nhánh nếu có branchId
+            if (branchId == "none")
+            {
+                departmentsQuery = departmentsQuery.Where(d => d.BranchID == null);
+            }
+            else if (int.TryParse(branchId, out int parsedBranchId) && parsedBranchId != 0)
+            {
+                departmentsQuery = departmentsQuery.Where(d => d.BranchID == parsedBranchId);
+                SelectedBranchId = parsedBranchId;
+            }
+            else
+            {
+                SelectedBranchId = null; // Mặc định là "All Branches"
+            }
+
+            var departments = await departmentsQuery.ToListAsync();
+
+            // Nhóm phòng ban theo chi nhánh
+            DepartmentsByBranch = departments
+                .GroupBy(d => d.Branch ?? new Branch { BranchName = "No Branch", AutoID = 0 })
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            return Page();
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
         }
 
         public async Task<IActionResult> OnGetDetailsAsync(int id)
         {
+<<<<<<< HEAD
             try
+=======
+            var department = await _context.Departments
+                .Include(d => d.Branch)
+                .ThenInclude(b => b.Company)
+                .ThenInclude(c => c.Corporation)
+                .FirstOrDefaultAsync(d => d.AutoID == id);
+
+            if (department == null)
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
             {
                 var email = User.FindFirstValue(ClaimTypes.Email);
                 if (string.IsNullOrEmpty(email))
@@ -158,6 +220,7 @@ namespace CMS.Pages.Manager
             }
             catch (Exception ex)
             {
+<<<<<<< HEAD
                 _logger.LogError(ex, "Lỗi khi lấy chi tiết phòng ban: Id={Id}", id);
                 return StatusCode(500, new { success = false, message = $"Lỗi khi tải chi tiết: {ex.Message}" });
             }
@@ -391,6 +454,17 @@ namespace CMS.Pages.Manager
         {
             [Required]
             public int AutoID { get; set; }
+=======
+                departmentName = department.DepartmentName,
+                departmentSymbol = department.DepartmentSymbol,
+                departmentDescription = department.DepartmentDescription,
+                representative = department.Representative,
+                isActive = department.IsActive,
+                branchName = department.Branch?.BranchName,
+                companyName = department.Branch?.Company?.CompanyName,
+                corporationName = department.Branch?.Company?.Corporation?.CorporationName
+            });
+>>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
         }
     }
 }
