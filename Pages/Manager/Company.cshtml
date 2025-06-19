@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model CMS.Pages.Manager.CompanyModel
 @{
     ViewData["Title"] = "Company List";
@@ -176,13 +176,10 @@
                                 <input type="text" class="form-control" id="editRepresentative" name="Representative">
                             </div>
                             <div class="mb-3">
-<<<<<<< HEAD
                                 <label for="editCorporation" class="form-label">Corporation</label>
                                 <input type="text" class="form-control" id="editCorporation" disabled>
                             </div>
                             <div class="mb-3">
-=======
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                                 <label for="editIsActive" class="form-label">IsActive</label>
                                 <select class="form-control" id="editIsActive" name="IsActive">
                                     <option value="true">Yes</option>
@@ -256,7 +253,6 @@
                 type: 'GET',
                 data: { id: companyId },
                 success: function (data) {
-<<<<<<< HEAD
                     if (data.success) {
                         $('#detailName').text(data.company.companyName || 'N/A');
                         $('#detailSymbol').text(data.company.companySymbol || 'N/A');
@@ -272,19 +268,6 @@
                     } else {
                         alert(data.message || 'Lỗi khi tải chi tiết công ty.');
                     }
-=======
-                    $('#detailName').text(data.companyName || 'N/A');
-                    $('#detailSymbol').text(data.companySymbol || 'N/A');
-                    $('#detailAddress').text(data.address || 'N/A');
-                    $('#detailCity').text(data.city || 'N/A');
-                    $('#detailCountry').text(data.country || 'N/A');
-                    $('#detailPhone').text(data.phone || 'N/A');
-                    $('#detailHomePhone').text(data.homePhone || 'N/A');
-                    $('#detailRepresentative').text(data.representative || 'N/A');
-                    $('#detailIsActive').text(data.isActive ? 'Có' : 'Không');
-                    $('#detailCorporation').text(data.corporationName || 'N/A');
-                    $('#companyDetailsModal').modal('show');
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                 },
                 error: function () {
                     alert('Lỗi khi tải chi tiết công ty.');
@@ -318,11 +301,7 @@
 
                     const result = await response.json();
                     if (response.ok && result.success) {
-<<<<<<< HEAD
                         alert(result.message || 'Xóa công ty thành công');
-=======
-                        alert('Xóa công ty thành công');
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                         window.location.reload();
                     } else {
                         alert(result.message || 'Lỗi khi xóa công ty');
@@ -342,7 +321,6 @@
                         type: 'GET',
                         data: { id: companyId },
                         success: function (data) {
-<<<<<<< HEAD
                             if (data.success) {
                                 $('#editAutoID').val(data.company.autoID);
                                 $('#editCompanyName').val(data.company.companyName || '');
@@ -359,19 +337,6 @@
                             } else {
                                 alert(data.message || 'Lỗi khi tải dữ liệu để chỉnh sửa.');
                             }
-=======
-                            $('#editAutoID').val(data.autoID);
-                            $('#editCompanyName').val(data.companyName || '');
-                            $('#editCompanySymbol').val(data.companySymbol || '');
-                            $('#editAddress').val(data.address || '');
-                            $('#editCity').val(data.city || '');
-                            $('#editCountry').val(data.country || '');
-                            $('#editPhone').val(data.phone || '');
-                            $('#editHomePhone').val(data.homePhone || '');
-                            $('#editRepresentative').val(data.representative || '');
-                            $('#editCorporationID').val(data.corporationID || '');
-                            $('#editIsActive').val(data.isActive ? 'true' : 'false');
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                         },
                         error: function () {
                             alert('Lỗi khi tải dữ liệu để chỉnh sửa.');
@@ -386,10 +351,6 @@
                 const formData = new FormData(this);
                 const data = Object.fromEntries(formData);
                 data.IsActive = data.IsActive === 'true';
-<<<<<<< HEAD
-=======
-                data.CorporationID = data.CorporationID ? parseInt(data.CorporationID) : null;
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
 
                 try {
                     const response = await fetch('/Manager/Company?handler=AddCompany', {
@@ -403,11 +364,7 @@
 
                     const result = await response.json();
                     if (response.ok && result.success) {
-<<<<<<< HEAD
                         alert(result.message || 'Thêm công ty thành công');
-=======
-                        alert('Thêm công ty thành công');
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                         window.location.reload();
                     } else {
                         alert(result.message || 'Lỗi khi thêm công ty');
@@ -425,10 +382,6 @@
                 const data = Object.fromEntries(formData);
                 data.AutoID = parseInt(data.AutoID);
                 data.IsActive = data.IsActive === 'true';
-<<<<<<< HEAD
-=======
-                data.CorporationID = data.CorporationID ? parseInt(data.CorporationID) : null;
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
 
                 try {
                     const response = await fetch('/Manager/Company?handler=UpdateCompany', {
@@ -442,11 +395,7 @@
 
                     const result = await response.json();
                     if (response.ok && result.success) {
-<<<<<<< HEAD
                         alert(result.message || 'Cập nhật công ty thành công');
-=======
-                        alert('Cập nhật công ty thành công');
->>>>>>> 636d7a1c18d1f571743edee10ecfa2a89562f9c5
                         window.location.reload();
                     } else {
                         alert(result.message || 'Lỗi khi cập nhật công ty');
