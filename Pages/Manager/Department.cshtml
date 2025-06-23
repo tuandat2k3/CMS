@@ -1,0 +1,453 @@
+@page
+@model CMS.Pages.Manager.DepartmentModel
+@{
+    ViewData["Title"] = "Department List";
+    Layout = "_AdminLayout";
+}
+
+<h1>Department List</h1>
+
+<!-- Nút thêm và dropdown chọn chi nhánh trên cùng một hàng -->
+<div class="row mb-3 align-items-end">
+    <div class="col-md-4">
+        <label for="branchSelect" class="form-label">Select Branch</label>
+        <select id="branchSelect" class="form-select" onchange="filterByBranch()">
+            <option value="all" selected="@(Model.SelectedBranchId == null && HttpContext.Request.Query["branchId"] != "none" ? "selected" : null)">---All Branches---</option>
+            @foreach (var branch in Model.Branches)
+            {
+                <option value="@branch.AutoID" selected="@(Model.SelectedBranchId == branch.AutoID ? "selected" : null)">@branch.BranchName</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-8 text-end">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">Add New Department</button>
+    </div>
+</div>
+
+<!-- Thông báo thành công/lỗi -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Danh sách phòng ban -->
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.DepartmentsByBranch.Any())
+        {
+            @foreach (var branch in Model.DepartmentsByBranch)
+            {
+                <h3>@(branch.Key.BranchName)</h3>
+                <table class="table table-striped">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Name</th>
+                            <th>Symbol</th>
+                            <th>Representative</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var department in branch.Value)
+                        {
+                            <tr>
+                                <td>@department.DepartmentName</td>
+                                <td>@department.DepartmentSymbol</td>
+                                <td>@department.Representative</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="showDetails(@department.AutoID)">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </button>
+                                    <button class="btn btn-warning btn-sm edit-department" data-id="@department.AutoID" data-bs-toggle="modal" data-bs-target="#editDepartmentModal">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm delete-department" data-id="@department.AutoID" data-bs-toggle="modal" data-bs-target="#deleteDepartmentModal">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No departments found for the selected branch.</p>
+        }
+    </div>
+</div>
+
+<!-- Modal thêm phòng ban -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDepartmentModalLabel">Add New Department</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addDepartmentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addDepartmentName" class="form-label">Department Name</label>
+                                <input type="text" class="form-control" id="addDepartmentName" name="DepartmentName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addDepartmentSymbol" class="form-label">Department Symbol</label>
+                                <input type="text" class="form-control" id="addDepartmentSymbol" name="DepartmentSymbol">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addDepartmentDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="addDepartmentDescription" name="DepartmentDescription" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="addRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addIsActive" class="form-label">Is Active</label>
+                                <select class="form-control" id="addIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            @if (Model.SelectedBranchId == null)
+                            {
+                                <div class="mb-3">
+                                    <label for="addBranchId" class="form-label">Branch</label>
+                                    <select class="form-control" id="addBranchId" name="BranchID">
+                                        <option value="">---Select Branch---</option>
+                                        @foreach (var branch in Model.Branches)
+                                        {
+                                            <option value="@branch.AutoID">@branch.BranchName</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mb-3">
+                                    <label for="addBranchName" class="form-label">Branch</label>
+                                    <input type="text" class="form-control" id="addBranchName" value="@Model.Branches.FirstOrDefault(b => b.AutoID == Model.SelectedBranchId)?.BranchName" disabled>
+                                    <input type="hidden" id="addBranchId" name="BranchID" value="@Model.SelectedBranchId">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sửa phòng ban -->
+<div class="modal fade" id="editDepartmentModal" tabindex="-1" aria-labelledby="editDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editDepartmentModalLabel">Edit Department</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editDepartmentForm">
+                    <input type="hidden" id="editAutoID" name="AutoID">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editDepartmentName" class="form-label">Department Name</label>
+                                <input type="text" class="form-control" id="editDepartmentName" name="DepartmentName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDepartmentSymbol" class="form-label">Department Symbol</label>
+                                <input type="text" class="form-control" id="editDepartmentSymbol" name="DepartmentSymbol">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDepartmentDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="editDepartmentDescription" name="DepartmentDescription" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="editRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editIsActive" class="form-label">Is Active</label>
+                                <select class="form-control" id="editIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editBranchName" class="form-label">Branch</label>
+                                <input type="text" class="form-control" id="editBranchName" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết phòng ban -->
+<div class="modal fade" id="departmentDetailsModal" tabindex="-1" aria-labelledby="departmentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="departmentDetailsModalLabel">Department Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="loadingSpinner" class="text-center" style="display: none;">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="detailContent">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> <span id="detailName"></span></p>
+                            <p><strong>Symbol:</strong> <span id="detailSymbol"></span></p>
+                            <p><strong>Description:</strong> <span id="detailDescription"></span></p>
+                            <p><strong>Representative:</strong> <span id="detailRepresentative"></span></p>
+                            <p><strong>Active:</strong> <span id="detailIsActive"></span></p>
+                            <p><strong>Created By:</strong> <span id="detailCreateBy"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Branch:</strong> <span id="detailBranch"></span></p>
+                            <p><strong>Company:</strong> <span id="detailCompany"></span></p>
+                            <p><strong>Corporation:</strong> <span id="detailCorporation"></span></p>
+                            <p><strong>Created Date:</strong> <span id="detailCreateDate"></span></p>
+                            <p><strong>Last Modified By:</strong> <span id="detailLastModifiedBy"></span></p>
+                            <p><strong>Last Modified Date:</strong> <span id="detailLastModifiedDate"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa phòng ban -->
+<div class="modal fade" id="deleteDepartmentModal" tabindex="-1" aria-labelledby="deleteDepartmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteDepartmentModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa phòng ban này không? Hành động này không thể hoàn tác.</p>
+                <form id="deleteDepartmentForm">
+                    <input type="hidden" id="deleteAutoID" name="AutoID">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        function showDetails(departmentId) {
+            $('#loadingSpinner').show();
+            $('#detailContent').hide();
+            $.ajax({
+                url: '@Url.Page("/Manager/Department", "Details")',
+                type: 'GET',
+                data: { id: departmentId },
+                success: function (data) {
+                    if (data.success) {
+                        $('#detailName').text(data.department.departmentName || 'N/A');
+                        $('#detailSymbol').text(data.department.departmentSymbol || 'N/A');
+                        $('#detailDescription').text(data.department.departmentDescription || 'N/A');
+                        $('#detailRepresentative').text(data.department.representative || 'N/A');
+                        $('#detailIsActive').text(data.department.isActive ? 'Có' : 'Không');
+                        $('#detailBranch').text(data.department.branchName || 'N/A');
+                        $('#detailCompany').text(data.department.companyName || 'N/A');
+                        $('#detailCorporation').text(data.department.corporationName || 'N/A');
+                        $('#detailCreateBy').text(data.department.createBy || 'N/A');
+                        $('#detailCreateDate').text(data.department.createDate || 'N/A');
+                        $('#detailLastModifiedBy').text(data.department.lastModifiedBy || 'N/A');
+                        $('#detailLastModifiedDate').text(data.department.lastModifiedDate || 'N/A');
+                        $('#loadingSpinner').hide();
+                        $('#detailContent').show();
+                        $('#departmentDetailsModal').modal('show');
+                    } else {
+                        $('#loadingSpinner').hide();
+                        $('#detailContent').show();
+                        alert(data.message || 'Lỗi khi tải chi tiết phòng ban.');
+                    }
+                },
+                error: function () {
+                    $('#loadingSpinner').hide();
+                    $('#detailContent').show();
+                    alert('Lỗi khi tải chi tiết phòng ban.');
+                }
+            });
+        }
+
+        function filterByBranch() {
+            var branchId = $('#branchSelect').val();
+            window.location.href = '@Url.Page("/Manager/Department")' + '?branchId=' + branchId;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Xử lý modal xóa
+            document.querySelectorAll('.delete-department').forEach(button => {
+                button.addEventListener('click', function () {
+                    const departmentId = this.getAttribute('data-id');
+                    document.querySelector('#deleteAutoID').value = departmentId;
+                });
+            });
+
+            // Xử lý form xóa
+            document.querySelector('#deleteDepartmentForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const departmentId = document.querySelector('#deleteAutoID').value;
+
+                try {
+                    const response = await fetch('/Manager/Department?handler=DeleteDepartment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ AutoID: parseInt(departmentId) })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Xóa phòng ban thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi xóa phòng ban');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi xóa phòng ban:', error);
+                    alert(`Lỗi khi xóa phòng ban: ${error.message}`);
+                }
+            });
+
+            // Xử lý modal sửa - Điền dữ liệu
+            document.querySelectorAll('.edit-department').forEach(button => {
+                button.addEventListener('click', function () {
+                    const departmentId = this.getAttribute('data-id');
+                    $.ajax({
+                        url: '@Url.Page("/Manager/Department", "Details")',
+                        type: 'GET',
+                        data: { id: departmentId },
+                        success: function (data) {
+                            if (data.success) {
+                                $('#editAutoID').val(data.department.autoID);
+                                $('#editDepartmentName').val(data.department.departmentName || '');
+                                $('#editDepartmentSymbol').val(data.department.departmentSymbol || '');
+                                $('#editDepartmentDescription').val(data.department.departmentDescription || '');
+                                $('#editRepresentative').val(data.department.representative || '');
+                                $('#editIsActive').val(data.department.isActive ? 'true' : 'false');
+                                $('#editBranchName').val(data.department.branchName || 'N/A');
+                                $('#editDepartmentModal').modal('show');
+                            } else {
+                                alert(data.message || 'Lỗi khi tải dữ liệu để chỉnh sửa.');
+                            }
+                        },
+                        error: function () {
+                            alert('Lỗi khi tải dữ liệu để chỉnh sửa.');
+                        }
+                    });
+                });
+            });
+
+            // Xử lý form thêm
+            document.querySelector('#addDepartmentForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.IsActive = data.IsActive === 'true';
+                if (data.BranchID) {
+                    data.BranchID = parseInt(data.BranchID);
+                } else {
+                    delete data.BranchID; // Nếu không chọn chi nhánh
+                }
+
+                try {
+                    const response = await fetch('/Manager/Department?handler=AddDepartment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Thêm phòng ban thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi thêm phòng ban');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi thêm phòng ban:', error);
+                    alert(`Lỗi khi thêm phòng ban: ${error.message}`);
+                }
+            });
+
+            // Xử lý form sửa
+            document.querySelector('#editDepartmentForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.AutoID = parseInt(data.AutoID);
+                data.IsActive = data.IsActive === 'true';
+
+                try {
+                    const response = await fetch('/Manager/Department?handler=UpdateDepartment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Cập nhật phòng ban thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi cập nhật phòng ban');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật phòng ban:', error);
+                    alert(`Lỗi khi cập nhật phòng ban: ${error.message}`);
+                }
+            });
+        });
+    </script>
+}

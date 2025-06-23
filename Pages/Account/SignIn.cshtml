@@ -1,0 +1,44 @@
+﻿@page
+@model CMS.Pages.Account.SignInModel
+@{
+    ViewData["Title"] = "Login";
+}
+<div class="text-center">
+
+    <div class="row justify-content-center mt-4">
+        <!-- Local Login Column -->
+        <div class="col-md-7">
+            <h4>Đăng nhập bằng tài khoản</h4>
+            <form method="post" asp-page-handler="LocalLogin">
+                <div class="form-group">
+                    <label asp-for="Input.UserName">UserName</label>
+                    <input asp-for="Input.UserName" class="form-control" />
+                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password">Password</label>
+                    <input asp-for="Input.Password" class="form-control" type="password" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                @if (ViewData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @ViewData["ErrorMessage"]
+                    </div>
+                }
+                <button type="submit" class="btn btn-success mt-3 w-100">Login</button>
+            </form>
+        </div>
+
+        <!-- Google Login Column -->
+        <div class="col-md-3">
+            <h4>Login With Google</h4>
+            <p>Nhấn vào nút bên dưới để đăng nhập với tài khoản Google.</p>
+            <a class="btn btn-success mt-3 w-100" href="~/Account/ExternalLogin?provider=Google">Đăng nhập với Google</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

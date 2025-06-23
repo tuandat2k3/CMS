@@ -1,0 +1,444 @@
+﻿@page
+@model CMS.Pages.Contract.CurrentContractModel
+@{
+    Layout = "_ManagerLayout";
+    ViewData["Title"] = "Department's Contract";
+}
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<div class="wrapper">
+    <!-- Button to trigger the add contract modal -->
+    <div class="mb-3">
+        <button class="btn btn-primary" onclick="showAddContractModal()">Thêm hợp đồng mới</button>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr class="bg-success bg-opacity-75 text-white">
+                <th>#</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>Value(VNĐ)</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var contract in Model.Contracts)
+            {
+                <tr>
+                    <td>@contract.ContractNumber</td>
+                    <td>@contract.ContractName</td>
+                    <td>@contract.ContractType</td>
+                    <td>@contract.StartDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@contract.EndDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@contract.ContractValue?.ToString("N0")</td>
+                    <td>@contract.ContractStatus</td>
+                    <td>
+                        <a href="javascript:void(0);" class="btn btn-info btn-sm" onclick="showContractDetail(@contract.AutoID)">
+                            <i class="bi bi-eye-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal chi tiết -->
+<div class="modal fade" id="contractDetailModal" tabindex="-1" aria-labelledby="contractDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết hợp đồng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Mã hợp đồng:</strong>
+                        <span id="detail-contractNumber"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Tên hợp đồng:</strong>
+                        <span id="detail-contractName"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Loại hợp đồng:</strong>
+                        <span id="detail-contractType"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Trạng thái:</strong>
+                        <span id="detail-contractStatus"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày bắt đầu:</strong>
+                        <span id="detail-startDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày kết thúc:</strong>
+                        <span id="detail-endDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Giá trị hợp đồng:</strong>
+                        <span id="detail-contractValue"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Năm hợp đồng:</strong>
+                        <span id="detail-contractYear"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày ký hợp đồng:</strong>
+                        <span id="detail-contractDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Thời gian ký:</strong>
+                        <span id="detail-contractTime"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Đối tác:</strong>
+                        <span id="detail-partner"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Phòng ban:</strong>
+                        <span id="detail-department"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Người tạo:</strong>
+                        <span id="detail-createBy"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày tạo:</strong>
+                        <span id="detail-createDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Cập nhật lần cuối bởi:</strong>
+                        <span id="detail-lastUpdateBy"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày cập nhật lần cuối:</strong>
+                        <span id="detail-lastUpdateDate"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>Tổng giá trị hóa đơn (đã thanh toán):</strong>
+                        <span id="detail-totalInvoiceValue"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>Trạng thái thanh toán:</strong>
+                        <span id="detail-paymentStatus"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>Tệp đính kèm hợp đồng:</strong>
+                        <div id="detail-contract-files" class="mt-2">
+                            <!-- Contract files will be populated here -->
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>Tệp đính kèm hóa đơn:</strong>
+                        <div id="detail-invoice-files" class="mt-2">
+                            <!-- Invoice files will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm hợp đồng mới -->
+<div class="modal fade" id="addContractModal" tabindex="-1" aria-labelledby="addContractModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addContractModalLabel">Thêm hợp đồng mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addContractForm">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="add-contractName" class="form-label"><strong>Tên hợp đồng:</strong></label>
+                            <input type="text" class="form-control" id="add-contractName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="contractType" class="form-label">Loại hợp đồng <span class="text-danger">*</span></label>
+                            <select class="form-select" id="contractType" name="contractType" required>
+                                <option value="Business">Business</option>
+                                <option value="Financial">Financial</option>
+                                <option value="Construction">Construction</option>
+                                <option value="HR">HR</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="add-contractNumber" class="form-label"><strong>Mã hợp đồng:</strong></label>
+                            <input type="text" class="form-control" id="add-contractNumber" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="add-contractYear" class="form-label"><strong>Năm hợp đồng:</strong></label>
+                            <input type="text" class="form-control" id="add-contractYear" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="add-contractDate" class="form-label"><strong>Ngày ký hợp đồng:</strong></label>
+                            <input type="date" class="form-control" id="add-contractDate" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="add-partner" class="form-label"><strong>Đối tác:</strong></label>
+                            <select class="form-select" id="add-partner" required>
+                                <option value="">Chọn đối tác</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="add-staff" class="form-label"><strong>Nhân viên phụ trách:</strong></label>
+                            <select class="form-select" id="add-staff" required>
+                                <option value="">Chọn nhân viên</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="submitNewContract()">Thêm hợp đồng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Helper function to show modal
+        function showModal(modalId) {
+            if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+                console.error("Bootstrap Modal is not available.");
+                alert("Lỗi: Không thể hiển thị modal.");
+                return;
+            }
+            const modalElement = document.getElementById(modalId);
+            if (modalElement) {
+                new bootstrap.Modal(modalElement).show();
+            } else {
+                console.error(`Modal with ID ${modalId} not found.`);
+            }
+        }
+
+        // Show Contract Detail Modal
+        function showContractDetail(id) {
+            fetch(`?handler=ContractDetail&id=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error("Lỗi server: " + (text || res.statusText));
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const contract = data.contract;
+                    document.getElementById('detail-contractNumber').textContent = contract.contractNumber || '';
+                    document.getElementById('detail-contractName').textContent = contract.contractName || '';
+                    document.getElementById('detail-contractType').textContent = contract.contractType || '';
+                    document.getElementById('detail-contractStatus').textContent = contract.contractStatus || '';
+                    document.getElementById('detail-startDate').textContent = formatDate(contract.startDate) || '';
+                    document.getElementById('detail-endDate').textContent = formatDate(contract.endDate) || '';
+                    document.getElementById('detail-contractValue').textContent = formatNumber(contract.contractValue) + ' VNĐ' || '';
+                    document.getElementById('detail-contractYear').textContent = contract.contractYear || '';
+                    document.getElementById('detail-contractDate').textContent = formatDate(contract.contractDate) || '';
+                    document.getElementById('detail-contractTime').textContent = contract.contractTime || '';
+                    document.getElementById('detail-partner').textContent = contract.partnerName || '';
+                    document.getElementById('detail-department').textContent = contract.departmentName || '';
+                    document.getElementById('detail-createBy').textContent = contract.createBy || '';
+                    document.getElementById('detail-createDate').textContent = formatDate(contract.createDate) || '';
+                    document.getElementById('detail-lastUpdateBy').textContent = contract.lastUpdateBy || '';
+                    document.getElementById('detail-lastUpdateDate').textContent = formatDate(contract.lastUpdateDate) || '';
+                    document.getElementById('detail-totalInvoiceValue').textContent = formatNumber(contract.totalInvoiceValue) + ' VNĐ' || '0 VNĐ';
+
+                    const contractValue = contract.contractValue || 0;
+                    const totalInvoiceValue = contract.totalInvoiceValue || 0;
+                    const paymentStatusElement = document.getElementById('detail-paymentStatus');
+                    if (totalInvoiceValue >= contractValue && contractValue > 0) {
+                        paymentStatusElement.textContent = 'Đã thanh toán xong';
+                        paymentStatusElement.className = 'text-success';
+                    } else if (totalInvoiceValue < contractValue) {
+                        const remaining = contractValue - totalInvoiceValue;
+                        paymentStatusElement.textContent = `Còn thiếu: ${formatNumber(remaining)} VNĐ`;
+                        paymentStatusElement.className = 'text-danger';
+                    } else {
+                        paymentStatusElement.textContent = 'Chưa thanh toán';
+                        paymentStatusElement.className = 'text-warning';
+                    }
+
+                    const contractFilesContainer = document.getElementById('detail-contract-files');
+                    contractFilesContainer.innerHTML = '';
+                    if (contract.contractFiles && contract.contractFiles.length > 0) {
+                        contract.contractFiles.forEach(file => {
+                            const fileElement = document.createElement('div');
+                            fileElement.className = 'mb-1';
+                            fileElement.innerHTML = `
+                                <a href="?handler=DownloadFile&id=${file.autoID}" class="text-primary" download>
+                                    <i class="bi bi-file-earmark-arrow-down"></i> ${file.fileName}
+                                </a>
+                            `;
+                            contractFilesContainer.appendChild(fileElement);
+                        });
+                    } else {
+                        contractFilesContainer.innerHTML = '<p>Không có tệp đính kèm</p>';
+                    }
+
+                    const invoiceFilesContainer = document.getElementById('detail-invoice-files');
+                    invoiceFilesContainer.innerHTML = '';
+                    if (contract.invoiceFiles && contract.invoiceFiles.length > 0) {
+                        contract.invoiceFiles.forEach(file => {
+                            const fileElement = document.createElement('div');
+                            fileElement.className = 'mb-1';
+                            fileElement.innerHTML = `
+                                <a href="?handler=DownloadFile&id=${file.autoID}" class="text-primary" download>
+                                    <i class="bi bi-file-earmark-arrow-down"></i> ${file.fileName}
+                                </a>
+                            `;
+                            invoiceFilesContainer.appendChild(fileElement);
+                        });
+                    } else {
+                        invoiceFilesContainer.innerHTML = '<p>Không có tệp đính kèm hóa đơn</p>';
+                    }
+
+                    showModal('contractDetailModal');
+                } else {
+                    alert("Không thể lấy thông tin hợp đồng: " + (data.message || "Không xác định"));
+                }
+            })
+            .catch(err => {
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        // Helper function to format number
+        function formatNumber(value) {
+            if (value === null || value === undefined) return '';
+            return new Intl.NumberFormat('vi-VN').format(value);
+        }
+
+        // Show Add Contract Modal and fetch partners and staff
+        function showAddContractModal() {
+            // Clear previous form data
+            document.getElementById('add-contractName').value = '';
+            document.getElementById('add-contractNumber').value = '';
+            document.getElementById('add-contractYear').value = '';
+            document.getElementById('add-contractDate').value = '';
+            document.getElementById('add-partner').innerHTML = '<option value="">Chọn đối tác</option>';
+            document.getElementById('add-staff').innerHTML = '<option value="">Chọn nhân viên</option>';
+
+            // Fetch partners
+            fetch(`?handler=Partners`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const partnerSelect = document.getElementById('add-partner');
+                data.forEach(partner => {
+                    const option = document.createElement('option');
+                    option.value = partner.id;
+                    option.textContent = partner.companyName;
+                    partnerSelect.appendChild(option);
+                });
+            })
+            .catch(err => {
+                alert("Lỗi khi tải danh sách đối tác: " + err.message);
+            });
+
+            // Fetch department staff
+            fetch(`?handler=DepartmentStaff`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const staffSelect = document.getElementById('add-staff');
+                data.forEach(staff => {
+                    const option = document.createElement('option');
+                    option.value = staff.staffID;
+                    option.textContent = staff.fullName;
+                    staffSelect.appendChild(option);
+                });
+            })
+            .catch(err => {
+                alert("Lỗi khi tải danh sách nhân viên: " + err.message);
+            });
+
+            // Show modal
+            showModal('addContractModal');
+        }
+
+        // Submit new contract
+        function submitNewContract() {
+            const contractData = {
+                StaffID: document.getElementById('add-staff').value,
+                ContractName: document.getElementById('add-contractName').value,
+                ContractNumber: document.getElementById('add-contractNumber').value,
+                ContractYear: document.getElementById('add-contractYear').value,
+                ContractDate: document.getElementById('add-contractDate').value,
+                PartnerID: document.getElementById('add-partner').value,
+                ContractType: document.getElementById('contractType').value
+            };
+
+            if (!contractData.StaffID || !contractData.ContractName || !contractData.ContractType ||
+                !contractData.ContractNumber || !contractData.ContractYear || !contractData.ContractDate ||
+                !contractData.PartnerID) {
+                alert("Vui lòng điền đầy đủ thông tin!");
+                return;
+            }
+
+            // Get the anti-forgery token
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch(`?handler=AssignedContractToUser`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify(contractData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Thêm hợp đồng thành công!");
+                    bootstrap.Modal.getInstance(document.getElementById('addContractModal')).hide();
+                    window.location.reload(); // Refresh page to show new contract
+                } else {
+                    alert("Lỗi khi thêm hợp đồng: " + (data.message || "Không xác định"));
+                }
+            })
+            .catch(err => {
+                alert("Lỗi: " + err.message);
+            });
+        }
+    </script>
+}

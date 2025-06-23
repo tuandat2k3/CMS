@@ -1,0 +1,247 @@
+﻿@page
+@model CMS.Pages.Contract.ChartModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Contract Statistics";
+}
+
+<h2>Thống kê hợp đồng</h2>
+
+<!-- Button to download Excel -->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <a href="?handler=DownloadExcel" class="btn btn-success">Tải xuống Excel</a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Biểu đồ theo trạng thái -->
+    <div class="col-md-6 mb-4">
+        <h4>Theo trạng thái</h4>
+        <canvas id="statusChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Biểu đồ theo quý -->
+    <div class="col-md-6 mb-4">
+        <h4>Theo quý</h4>
+        <canvas id="quarterChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Biểu đồ doanh thu theo tháng -->
+    <div class="col-md-6 mb-4">
+        <h4>Doanh thu theo tháng</h4>
+        <canvas id="monthlyRevenueChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Biểu đồ doanh thu theo quý -->
+    <div class="col-md-6 mb-4">
+        <h4>Doanh thu theo quý</h4>
+        <canvas id="quarterlyRevenueChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Biểu đồ doanh thu theo loại hợp đồng -->
+    <div class="col-md-6 mb-4">
+        <h4>Doanh thu theo loại hợp đồng</h4>
+        <canvas id="contractTypeChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Biểu đồ số lượng hợp đồng theo đối tác -->
+    <div class="col-md-6 mb-4">
+        <h4>Số lượng hợp đồng theo đối tác</h4>
+        <canvas id="partnerChart" width="400" height="300"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 1. Biểu đồ theo trạng thái (Bar Chart)
+        var statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: @Json.Serialize(Model.StatusStatistics.Select(s => s.ContractStatus)),
+                datasets: [{
+                    label: 'Số lượng hợp đồng',
+                    data: @Json.Serialize(Model.StatusStatistics.Select(s => s.ContractCount)),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // 2. Biểu đồ theo quý (Line Chart)
+        var quarterCtx = document.getElementById('quarterChart').getContext('2d');
+        new Chart(quarterCtx, {
+            type: 'line',
+            data: {
+                labels: @Json.Serialize(Model.QuarterStatistics.Select(s => $"{s.ContractYear} Q{s.Quarter}")),
+                datasets: [{
+                    label: 'Số lượng hợp đồng',
+                    data: @Json.Serialize(Model.QuarterStatistics.Select(s => s.ContractCount)),
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. Biểu đồ doanh thu theo tháng (Line Chart)
+        var monthlyRevenueCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
+        new Chart(monthlyRevenueCtx, {
+            type: 'line',
+            data: {
+                labels: @Json.Serialize(Model.MonthlyRevenueStatistics.Select(s => $"{s.Month}/{s.Year}")),
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: @Json.Serialize(Model.MonthlyRevenueStatistics.Select(s => s.Revenue)),
+                    fill: false,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Biểu đồ doanh thu theo quý (Line Chart)
+        var quarterlyRevenueCtx = document.getElementById('quarterlyRevenueChart').getContext('2d');
+        new Chart(quarterlyRevenueCtx, {
+            type: 'line',
+            data: {
+                labels: @Json.Serialize(Model.QuarterlyRevenueStatistics.Select(s => $"{s.ContractYear} Q{s.Quarter}")),
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: @Json.Serialize(Model.QuarterlyRevenueStatistics.Select(s => s.Revenue)),
+                    fill: false,
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 5. Biểu đồ doanh thu theo loại hợp đồng (Bar Chart)
+        var contractTypeCtx = document.getElementById('contractTypeChart').getContext('2d');
+        new Chart(contractTypeCtx, {
+            type: 'bar',
+            data: {
+                labels: @Json.Serialize(Model.ContractTypeStatistics.Select(s => s.ContractType)),
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: @Json.Serialize(Model.ContractTypeStatistics.Select(s => s.Revenue)),
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 6. Biểu đồ số lượng hợp đồng theo đối tác (Horizontal Bar Chart)
+        var partnerCtx = document.getElementById('partnerChart').getContext('2d');
+        new Chart(partnerCtx, {
+            type: 'bar',
+            data: {
+                labels: @Json.Serialize(Model.PartnerStatistics.Select(s => s.PartnerName)),
+                datasets: [{
+                    label: 'ContractCount',
+                    data: @Json.Serialize(Model.PartnerStatistics.Select(s => s.ContractCount)),
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)', // Màu xanh lam giống trong hình
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Chuyển sang biểu đồ ngang
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'ContractCount'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Partner'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
+}
+
+<style>
+    .row {
+        margin-top: 20px;
+    }
+
+    .col-md-6 {
+        padding: 15px;
+    }
+
+    canvas {
+        max-width: 100%;
+    }
+
+    .btn-success {
+        margin-bottom: 10px;
+    }
+</style>

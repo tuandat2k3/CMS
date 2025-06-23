@@ -1,0 +1,410 @@
+@page
+@model CMS.Pages.Manager.CompanyModel
+@{
+    ViewData["Title"] = "Company List";
+    Layout = "_AdminLayout";
+}
+
+<h1>Company List</h1>
+
+<!-- Nút thêm công ty -->
+<div class="mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCompanyModal">Add New Company</button>
+</div>
+
+<!-- Thông báo thành công/lỗi -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Bảng danh sách công ty -->
+<table class="table table-striped">
+    <thead class="table-primary table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Symbol</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var company in Model.Companies)
+        {
+            <tr>
+                <td>@company.CompanyName</td>
+                <td>@company.CompanySymbol</td>
+                <td>@company.Address</td>
+                <td>@company.City</td>
+                <td>@company.Country</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="showDetails(@company.AutoID)">
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                    <button class="btn btn-warning btn-sm edit-company" data-id="@company.AutoID" data-bs-toggle="modal" data-bs-target="#editCompanyModal">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm delete-company" data-id="@company.AutoID" data-bs-toggle="modal" data-bs-target="#deleteCompanyModal">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal thêm công ty -->
+<div class="modal fade" id="addCompanyModal" tabindex="-1" aria-labelledby="addCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCompanyModalLabel">Add New Company</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCompanyForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addCompanyName" class="form-label">Company Name</label>
+                                <input type="text" class="form-control" id="addCompanyName" name="CompanyName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompanySymbol" class="form-label">Company Symbol</label>
+                                <input type="text" class="form-control" id="addCompanySymbol" name="CompanySymbol">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="addAddress" name="Address">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="addCity" name="City">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="addCountry" name="Country">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addPhone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="addPhone" name="Phone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addHomePhone" class="form-label">Home Phone</label>
+                                <input type="text" class="form-control" id="addHomePhone" name="HomePhone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="addRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addIsActive" class="form-label">IsActive</label>
+                                <select class="form-control" id="addIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sửa công ty -->
+<div class="modal fade" id="editCompanyModal" tabindex="-1" aria-labelledby="editCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCompanyModalLabel">Edit Company</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCompanyForm">
+                    <input type="hidden" id="editAutoID" name="AutoID">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editCompanyName" class="form-label">Company Name</label>
+                                <input type="text" class="form-control" id="editCompanyName" name="CompanyName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompanySymbol" class="form-label">Company Symbol</label>
+                                <input type="text" class="form-control" id="editCompanySymbol" name="CompanySymbol">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="editAddress" name="Address">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="editCity" name="City">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="editCountry" name="Country">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editPhone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editPhone" name="Phone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editHomePhone" class="form-label">HomePhone</label>
+                                <input type="text" class="form-control" id="editHomePhone" name="HomePhone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="editRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCorporation" class="form-label">Corporation</label>
+                                <input type="text" class="form-control" id="editCorporation" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editIsActive" class="form-label">IsActive</label>
+                                <select class="form-control" id="editIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết công ty -->
+<div class="modal fade" id="companyDetailsModal" tabindex="-1" aria-labelledby="companyDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="companyDetailsModalLabel">Company Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Name:</strong> <span id="detailName"></span></p>
+                <p><strong>Symbol:</strong> <span id="detailSymbol"></span></p>
+                <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+                <p><strong>City:</strong> <span id="detailCity"></span></p>
+                <p><strong>Country:</strong> <span id="detailCountry"></span></p>
+                <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                <p><strong>Home Phone:</strong> <span id="detailHomePhone"></span></p>
+                <p><strong>Representative:</strong> <span id="detailRepresentative"></span></p>
+                <p><strong>IsActive:</strong> <span id="detailIsActive"></span></p>
+                <p><strong>Corporation:</strong> <span id="detailCorporation"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa công ty -->
+<div class="modal fade" id="deleteCompanyModal" tabindex="-1" aria-labelledby="deleteCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCompanyModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa công ty này không? Hành động này không thể hoàn tác.</p>
+                <form id="deleteCompanyForm">
+                    <input type="hidden" id="deleteAutoID" name="AutoID">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        function showDetails(companyId) {
+            $.ajax({
+                url: '@Url.Page("/Manager/Company", "Details")',
+                type: 'GET',
+                data: { id: companyId },
+                success: function (data) {
+                    if (data.success) {
+                        $('#detailName').text(data.company.companyName || 'N/A');
+                        $('#detailSymbol').text(data.company.companySymbol || 'N/A');
+                        $('#detailAddress').text(data.company.address || 'N/A');
+                        $('#detailCity').text(data.company.city || 'N/A');
+                        $('#detailCountry').text(data.company.country || 'N/A');
+                        $('#detailPhone').text(data.company.phone || 'N/A');
+                        $('#detailHomePhone').text(data.company.homePhone || 'N/A');
+                        $('#detailRepresentative').text(data.company.representative || 'N/A');
+                        $('#detailIsActive').text(data.company.isActive ? 'Có' : 'Không');
+                        $('#detailCorporation').text(data.company.corporationName || 'N/A');
+                        $('#companyDetailsModal').modal('show');
+                    } else {
+                        alert(data.message || 'Lỗi khi tải chi tiết công ty.');
+                    }
+                },
+                error: function () {
+                    alert('Lỗi khi tải chi tiết công ty.');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Xử lý modal xóa
+            document.querySelectorAll('.delete-company').forEach(button => {
+                button.addEventListener('click', function () {
+                    const companyId = this.getAttribute('data-id');
+                    document.querySelector('#deleteAutoID').value = companyId;
+                });
+            });
+
+            // Xử lý form xóa
+            document.querySelector('#deleteCompanyForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const companyId = document.querySelector('#deleteAutoID').value;
+
+                try {
+                    const response = await fetch('/Manager/Company?handler=DeleteCompany', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ AutoID: parseInt(companyId) })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Xóa công ty thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi xóa công ty');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi xóa công ty:', error);
+                    alert(`Lỗi khi xóa công ty: ${error.message}`);
+                }
+            });
+
+            // Xử lý modal sửa - Điền dữ liệu
+            document.querySelectorAll('.edit-company').forEach(button => {
+                button.addEventListener('click', function () {
+                    const companyId = this.getAttribute('data-id');
+                    $.ajax({
+                        url: '@Url.Page("/Manager/Company", "Details")',
+                        type: 'GET',
+                        data: { id: companyId },
+                        success: function (data) {
+                            if (data.success) {
+                                $('#editAutoID').val(data.company.autoID);
+                                $('#editCompanyName').val(data.company.companyName || '');
+                                $('#editCompanySymbol').val(data.company.companySymbol || '');
+                                $('#editAddress').val(data.company.address || '');
+                                $('#editCity').val(data.company.city || '');
+                                $('#editCountry').val(data.company.country || '');
+                                $('#editPhone').val(data.company.phone || '');
+                                $('#editHomePhone').val(data.company.homePhone || '');
+                                $('#editRepresentative').val(data.company.representative || '');
+                                $('#editCorporation').val(data.company.corporationName || '');
+                                $('#editIsActive').val(data.company.isActive ? 'true' : 'false');
+                                $('#editCompanyModal').modal('show');
+                            } else {
+                                alert(data.message || 'Lỗi khi tải dữ liệu để chỉnh sửa.');
+                            }
+                        },
+                        error: function () {
+                            alert('Lỗi khi tải dữ liệu để chỉnh sửa.');
+                        }
+                    });
+                });
+            });
+
+            // Xử lý form thêm
+            document.querySelector('#addCompanyForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.IsActive = data.IsActive === 'true';
+
+                try {
+                    const response = await fetch('/Manager/Company?handler=AddCompany', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Thêm công ty thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi thêm công ty');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi thêm công ty:', error);
+                    alert(`Lỗi khi thêm công ty: ${error.message}`);
+                }
+            });
+
+            // Xử lý form sửa
+            document.querySelector('#editCompanyForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.AutoID = parseInt(data.AutoID);
+                data.IsActive = data.IsActive === 'true';
+
+                try {
+                    const response = await fetch('/Manager/Company?handler=UpdateCompany', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Cập nhật công ty thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi cập nhật công ty');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật công ty:', error);
+                    alert(`Lỗi khi cập nhật công ty: ${error.message}`);
+                }
+            });
+        });
+    </script>
+}

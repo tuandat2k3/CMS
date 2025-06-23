@@ -1,0 +1,92 @@
+﻿@page
+@model CMS.Pages.Invoice.PendingInvoiceModel
+@{
+    ViewData["Title"] = "Pending Invoices";
+}
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<h1>Pending Invoices</h1>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Invoice Name</th>
+                <th scope="col">Contract Number</th>
+                <th scope="col">Issue Date</th>
+                <th scope="col">Due Date</th>
+                <th scope="col">Invoice Value (VNĐ)</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invoice in Model.PendingInvoices)
+            {
+                <tr>
+                    <td>@invoice.InvoicesName</td>
+                    <td>@invoice.Contract?.ContractNumber</td>
+                    <td>@invoice.IssueDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@invoice.DueDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@invoice.InvoiceValue</td>
+                    <td>@invoice.Status</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editModal_@invoice.AutoID">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <form asp-page-handler="MarkAsPaid" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@invoice.AutoID" />
+                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Mark this invoice as paid?')">
+                                <i class="bi bi-check-square-fill"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <!-- Edit Modal -->
+                <div class="modal fade" id="editModal_@invoice.AutoID" tabindex="-1" aria-labelledby="editModalLabel_@invoice.AutoID" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel_@invoice.AutoID">Edit Invoice: @invoice.InvoicesName</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form asp-page-handler="Update" method="post">
+                                <div class="modal-body">
+                                    <input type="hidden" name="Invoice.AutoID" value="@invoice.AutoID" />
+                                    <div class="mb-3">
+                                        <label class="form-label">Invoice Name</label>
+                                        <input type="text" class="form-control" name="Invoice.InvoicesName" value="@invoice.InvoicesName" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Issue Date</label>
+                                        <input type="date" class="form-control" name="Invoice.IssueDate" value="@invoice.IssueDate?.ToString("yyyy-MM-dd")" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Due Date</label>
+                                        <input type="date" class="form-control" name="Invoice.DueDate" value="@invoice.DueDate?.ToString("yyyy-MM-dd")" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Invoice Value</label>
+                                        <input type="number" step="0.01" class="form-control" name="Invoice.InvoiceValue" value="@invoice.InvoiceValue" required />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        // Add any custom JavaScript if needed
+    </script>
+}

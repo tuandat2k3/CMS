@@ -1,0 +1,396 @@
+﻿@page
+@model CMS.Pages.Manager.BranchModel
+@{
+    ViewData["Title"] = "Branch List";
+    Layout = "_AdminLayout";
+}
+
+<h1>Branch List</h1>
+
+<!-- Nút thêm chi nhánh -->
+<div class="mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBranchModal">Add New Branch</button>
+</div>
+
+<!-- Bảng danh sách chi nhánh -->
+<table class="table table-striped">
+    <thead class="table-primary table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Symbol</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>Representative</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var branch in Model.Branches)
+        {
+            <tr>
+                <td>@branch.BranchName</td>
+                <td>@branch.BranchSymbol</td>
+                <td>@branch.Address</td>
+                <td>@branch.City</td>
+                <td>@branch.Country</td>
+                <td>@branch.Representative</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="showDetails(@branch.AutoID)">
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                    <button class="btn btn-warning btn-sm edit-branch" data-id="@branch.AutoID" data-bs-toggle="modal" data-bs-target="#editBranchModal">
+                        <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm delete-branch" data-id="@branch.AutoID" data-bs-toggle="modal" data-bs-target="#deleteBranchModal">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal thêm chi nhánh -->
+<div class="modal fade" id="addBranchModal" tabindex="-1" aria-labelledby="addBranchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBranchModalLabel">Add New Branch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addBranchForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addBranchName" class="form-label">Branch Name</label>
+                                <input type="text" class="form-control" id="addBranchName" name="BranchName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addBranchSymbol" class="form-label">Branch Symbol</label>
+                                <input type="text" class="form-control" id="addBranchSymbol" name="BranchSymbol">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="addAddress" name="Address">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="addCity" name="City">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="addCountry" name="Country">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addPhone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="addPhone" name="Phone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addHomePhone" class="form-label">Home Phone</label>
+                                <input type="text" class="form-control" id="addHomePhone" name="HomePhone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="addRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addIsActive" class="form-label">Is Active</label>
+                                <select class="form-control" id="addIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sửa chi nhánh -->
+<div class="modal fade" id="editBranchModal" tabindex="-1" aria-labelledby="editBranchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBranchModalLabel">Edit Branch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBranchForm">
+                    <input type="hidden" id="editAutoID" name="AutoID">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editBranchName" class="form-label">Branch Name</label>
+                                <input type="text" class="form-control" id="editBranchName" name="BranchName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editBranchSymbol" class="form-label">Branch Symbol</label>
+                                <input type="text" class="form-control" id="editBranchSymbol" name="BranchSymbol">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="editAddress" name="Address">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="editCity" name="City">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="editCountry" name="Country">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editPhone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editPhone" name="Phone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editHomePhone" class="form-label">Home Phone</label>
+                                <input type="text" class="form-control" id="editHomePhone" name="HomePhone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="editRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompany" class="form-label">Company</label>
+                                <input type="text" class="form-control" id="editCompany" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editIsActive" class="form-label">Is Active</label>
+                                <select class="form-control" id="editIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết chi nhánh -->
+<div class="modal fade" id="branchDetailsModal" tabindex="-1" aria-labelledby="branchDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="branchDetailsModalLabel">Branch Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Name:</strong> <span id="detailName"></span></p>
+                <p><strong>Symbol:</strong> <span id="detailSymbol"></span></p>
+                <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+                <p><strong>City:</strong> <span id="detailCity"></span></p>
+                <p><strong>Country:</strong> <span id="detailCountry"></span></p>
+                <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                <p><strong>Home Phone:</strong> <span id="detailHomePhone"></span></p>
+                <p><strong>Representative:</strong> <span id="detailRepresentative"></span></p>
+                <p><strong>Active:</strong> <span id="detailIsActive"></span></p>
+                <p><strong>Company:</strong> <span id="detailCompany"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa chi nhánh -->
+<div class="modal fade" id="deleteBranchModal" tabindex="-1" aria-labelledby="deleteBranchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteBranchModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa chi nhánh này không? Hành động này không thể hoàn tác.</p>
+                <form id="deleteBranchForm">
+                    <input type="hidden" id="deleteAutoID" name="AutoID">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        function showDetails(branchId) {
+            $.ajax({
+                url: '@Url.Page("/Manager/Branch", "Details")',
+                type: 'GET',
+                data: { id: branchId },
+                success: function (data) {
+                    if (data.success) {
+                        $('#detailName').text(data.branch.branchName || 'N/A');
+                        $('#detailSymbol').text(data.branch.branchSymbol || 'N/A');
+                        $('#detailAddress').text(data.branch.address || 'N/A');
+                        $('#detailCity').text(data.branch.city || 'N/A');
+                        $('#detailCountry').text(data.branch.country || 'N/A');
+                        $('#detailPhone').text(data.branch.phone || 'N/A');
+                        $('#detailHomePhone').text(data.branch.homePhone || 'N/A');
+                        $('#detailRepresentative').text(data.branch.representative || 'N/A');
+                        $('#detailIsActive').text(data.branch.isActive ? 'Có' : 'Không');
+                        $('#detailCompany').text(data.branch.companyName || 'N/A');
+                        $('#branchDetailsModal').modal('show');
+                    } else {
+                        alert(data.message || 'Lỗi khi tải chi tiết chi nhánh.');
+                    }
+                },
+                error: function () {
+                    alert('Lỗi khi tải chi tiết chi nhánh.');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Xử lý modal xóa
+            document.querySelectorAll('.delete-branch').forEach(button => {
+                button.addEventListener('click', function () {
+                    const branchId = this.getAttribute('data-id');
+                    document.querySelector('#deleteAutoID').value = branchId;
+                });
+            });
+
+            // Xử lý form xóa
+            document.querySelector('#deleteBranchForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const branchId = document.querySelector('#deleteAutoID').value;
+
+                try {
+                    const response = await fetch('/Manager/Branch?handler=DeleteBranch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ AutoID: parseInt(branchId) })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Xóa chi nhánh thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi xóa chi nhánh');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi xóa chi nhánh:', error);
+                    alert(`Lỗi khi xóa chi nhánh: ${error.message}`);
+                }
+            });
+
+            // Xử lý modal sửa - Điền dữ liệu
+            document.querySelectorAll('.edit-branch').forEach(button => {
+                button.addEventListener('click', function () {
+                    const branchId = this.getAttribute('data-id');
+                    $.ajax({
+                        url: '@Url.Page("/Manager/Branch", "Details")',
+                        type: 'GET',
+                        data: { id: branchId },
+                        success: function (data) {
+                            if (data.success) {
+                                $('#editAutoID').val(data.branch.autoID);
+                                $('#editBranchName').val(data.branch.branchName || '');
+                                $('#editBranchSymbol').val(data.branch.branchSymbol || '');
+                                $('#editAddress').val(data.branch.address || '');
+                                $('#editCity').val(data.branch.city || '');
+                                $('#editCountry').val(data.branch.country || '');
+                                $('#editPhone').val(data.branch.phone || '');
+                                $('#editHomePhone').val(data.branch.homePhone || '');
+                                $('#editRepresentative').val(data.branch.representative || '');
+                                $('#editCompany').val(data.branch.companyName || '');
+                                $('#editIsActive').val(data.branch.isActive ? 'true' : 'false');
+                                $('#editBranchModal').modal('show');
+                            } else {
+                                alert(data.message || 'Lỗi khi tải dữ liệu để chỉnh sửa.');
+                            }
+                        },
+                        error: function () {
+                            alert('Lỗi khi tải dữ liệu để chỉnh sửa.');
+                        }
+                    });
+                });
+            });
+
+            // Xử lý form thêm
+            document.querySelector('#addBranchForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.IsActive = data.IsActive === 'true';
+
+                try {
+                    const response = await fetch('/Manager/Branch?handler=AddBranch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Thêm chi nhánh thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi thêm chi nhánh');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi thêm chi nhánh:', error);
+                    alert(`Lỗi khi thêm chi nhánh: ${error.message}`);
+                }
+            });
+
+            // Xử lý form sửa
+            document.querySelector('#editBranchForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.AutoID = parseInt(data.AutoID);
+                data.IsActive = data.IsActive === 'true';
+
+                try {
+                    const response = await fetch('/Manager/Branch?handler=UpdateBranch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert(result.message || 'Cập nhật chi nhánh thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || 'Lỗi khi cập nhật chi nhánh');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật chi nhánh:', error);
+                    alert(`Lỗi khi cập nhật chi nhánh: ${error.message}`);
+                }
+            });
+        });
+    </script>
+}

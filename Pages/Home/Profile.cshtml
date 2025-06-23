@@ -1,0 +1,28 @@
+﻿@page
+@model CMS.Pages.Home.ProfileModel
+
+@{
+    Layout = Model.Layout;
+    ViewData["Title"] = "Profile";
+}
+
+<h2>Thông tin người dùng</h2>
+
+@if (Model.CurrentUser != null)
+{
+    <div>
+        <p><strong>Họ tên:</strong> @Model.CurrentUser.FullName</p>
+        <p><strong>Email:</strong> @Model.CurrentUser.Email</p>
+        <p><strong>Mã nhân viên:</strong> @Model.CurrentUser.StaffCode</p>
+        <p><strong>Địa chỉ:</strong> @Model.CurrentUser.Address</p>
+        <p><strong>Tập đoàn:</strong> @Model.CurrentUser.Corporation?.CorporationName</p>
+        <p><strong>Công ty:</strong> @Model.CurrentUser.Company?.CompanyName</p>
+        <p><strong>Chi nhánh:</strong> @Model.CurrentUser.Branch?.BranchName</p>
+        <p><strong>Phòng ban:</strong> @Model.CurrentUser.Department?.DepartmentName</p>
+        <p><strong>Chức vụ:</strong> @Model.CurrentUser.Position?.PositionName</p>
+    </div>
+}
+else
+{
+    <p>Không tìm thấy thông tin người dùng.</p>
+}

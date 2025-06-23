@@ -1,0 +1,26 @@
+﻿@page
+@model CMS.Pages.Home.UserDashboardModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "UserDashboard";
+}
+
+<main class="main-container user-dashboard-bg">
+    <div class="dashboard-hero">
+        <div class="dashboard-content">
+            <h1 class="dashboard-title">Quản Lý Hợp Đồng</h1>
+            <p class="dashboard-description">
+                Không còn rối rắm với giấy tờ – hệ thống tự động hóa giúp bạn làm việc nhanh hơn,
+                chuẩn hóa và không lo sai sót.
+            </p>
+            <a asp-page="/Contract/MyContract" class="btn btn-primary">Go to Contracts</a>
+        </div>
+        <div class="dashboard-image">
+            <img src="~/dist/assets/img/minhhoa.png" alt="Team working on contracts" class="dashboard-img" />
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <!-- Optional: Add any JavaScript specific to the dashboard -->
+}

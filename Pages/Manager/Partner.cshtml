@@ -1,0 +1,511 @@
+﻿@page
+@model CMS.Pages.Manager.PartnerModel
+@{
+    ViewData["Title"] = "Partner Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="container mt-4">
+
+    <!-- Add New Partner Button -->
+    <div class="mb-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPartnerModal">Add New Partner</button>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Partners Table -->
+    <table class="table table-striped">
+        <thead class="table-primary table-bordered">
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Representative</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var partner in Model.Partners)
+            {
+                <tr>
+                    <td>@partner.CompanyName</td>
+                    <td>@partner.CompanyType</td>
+                    <td>@partner.Representative</td>
+                    <td>@partner.Email</td>
+                    <td>@partner.Phone</td>
+                    <td>@(partner.IsActive ? "Active" : "Inactive")</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showDetails(@partner.AutoID)">
+                            <i class="bi bi-eye-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning edit-partner" data-id="@partner.AutoID" data-bs-toggle="modal" data-bs-target="#editPartnerModal">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-partner" data-id="@partner.AutoID" data-bs-toggle="modal" data-bs-target="#deletePartnerModal">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Partner Modal -->
+<div class="modal fade" id="addPartnerModal" tabindex="-1" aria-labelledby="addPartnerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPartnerModalLabel">Add New Partner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPartnerForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addUserCode" class="form-label">User Code</label>
+                                <input type="text" class="form-control" id="addUserCode" name="UserCode">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompany" class="form-label">Company</label>
+                                <input type="text" class="form-control" id="addCompany" name="Company">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompanyName" class="form-label">Company Name</label>
+                                <input type="text" class="form-control" id="addCompanyName" name="CompanyName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompanyType" class="form-label">Company Type</label>
+                                <input type="text" class="form-control" id="addCompanyType" name="CompanyType">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompanyDescription" class="form-label">Company Description</label>
+                                <textarea class="form-control" id="addCompanyDescription" name="CompanyDescription" rows="4"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompanyAddress" class="form-label">Company Address</label>
+                                <input type="text" class="form-control" id="addCompanyAddress" name="CompanyAddress">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompanyAddressCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="addCompanyAddressCountry" name="CompanyAddressCountry">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addCompanyAddressCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="addCompanyAddressCity" name="CompanyAddressCity">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="addTradingOffice" class="form-label">Trading Office</label>
+                                <input type="text" class="form-control" id="addTradingOffice" name="TradingOffice">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="addRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addRepresentativePosition" class="form-label">Representative Position</label>
+                                <input type="text" class="form-control" id="addRepresentativePosition" name="RepresentativePosition">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addPhone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="addPhone" name="Phone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="addEmail" name="Email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addMSDN" class="form-label">MSDN</label>
+                                <input type="text" class="form-control" id="addMSDN" name="MSDN">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addMSDNBy" class="form-label">MSDN By</label>
+                                <input type="text" class="form-control" id="addMSDNBy" name="MSDNBy">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addIsActive" class="form-label">Active</label>
+                                <select class="form-control" id="addIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addIsDeleted" class="form-label">Deleted</label>
+                                <select class="form-control" id="addIsDeleted" name="IsDeleted">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Partner Modal -->
+<div class="modal fade" id="editPartnerModal" tabindex="-1" aria-labelledby="editPartnerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPartnerModalLabel">Edit Partner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPartnerForm">
+                    <input type="hidden" id="editPartnerId" name="Id">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editUserCode" class="form-label">User Code</label>
+                                <input type="text" class="form-control" id="editUserCode" name="UserCode">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompany" class="form-label">Company</label>
+                                <input type="text" class="form-control" id="editCompany" name="Company">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompanyName" class="form-label">Company Name</label>
+                                <input type="text" class="form-control" id="editCompanyName" name="CompanyName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompanyType" class="form-label">Company Type</label>
+                                <input type="text" class="form-control" id="editCompanyType" name="CompanyType">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompanyDescription" class="form-label">Company Description</label>
+                                <textarea class="form-control" id="editCompanyDescription" name="CompanyDescription" rows="4"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompanyAddress" class="form-label">Company Address</label>
+                                <input type="text" class="form-control" id="editCompanyAddress" name="CompanyAddress">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompanyAddressCountry" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="editCompanyAddressCountry" name="CompanyAddressCountry">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCompanyAddressCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="editCompanyAddressCity" name="CompanyAddressCity">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editTradingOffice" class="form-label">Trading Office</label>
+                                <input type="text" class="form-control" id="editTradingOffice" name="TradingOffice">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editRepresentative" class="form-label">Representative</label>
+                                <input type="text" class="form-control" id="editRepresentative" name="Representative">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editRepresentativePosition" class="form-label">Representative Position</label>
+                                <input type="text" class="form-control" id="editRepresentativePosition" name="RepresentativePosition">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPhone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="editPhone" name="Phone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" name="Email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMSDN" class="form-label">MSDN</label>
+                                <input type="text" class="form-control" id="editMSDN" name="MSDN">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMSDNBy" class="form-label">MSDN By</label>
+                                <input type="text" class="form-control" id="editMSDNBy" name="MSDNBy">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editIsActive" class="form-label">Active</label>
+                                <select class="form-control" id="editIsActive" name="IsActive">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editIsDeleted" class="form-label">Deleted</label>
+                                <select class="form-control" id="editIsDeleted" name="IsDeleted">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Partner Details Modal -->
+<div class="modal fade" id="partnerDetailsModal" tabindex="-1" aria-labelledby="partnerDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="partnerDetailsModalLabel">Partner Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <p><strong>User Code:</strong> <span id="detailCode"></span></p>
+                        <p><strong>Company:</strong> <span id="detailCompany"></span></p>
+                        <p><strong>Company Name:</strong> <span id="detailCompanyName"></span></p>
+                        <p><strong>Company Type:</strong> <span id="detailCompanyType"></span></p>
+                        <p><strong>Company Address:</strong> <span id="detailCompanyAddress"></span></p>
+                        <p><strong>Country:</strong> <span id="detailCompanyAddressCountry"></span></p>
+                        <p><strong>City:</strong> <span id="detailCompanyAddressCity"></span></p>
+                        <p><strong>Trading Office:</strong> <span id="detailTradingOffice"></span></p>
+                        <p><strong>Representative:</strong> <span id="detailRepresentative"></span></p>
+                        <p><strong>Representative Position:</strong> <span id="detailRepresentativePosition"></span></p>
+                    </div>
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                        <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+                        <p><strong>MSDN:</strong> <span id="detailMSDN"></span></p>
+                        <p><strong>MSDN By:</strong> <span id="detailMSDNBy"></span></p>
+                        <p><strong>Active:</strong> <span id="detailIsActive"></span></p>
+                        <p><strong>Created By:</strong> <span id="detailCreateBy"></span></p>
+                        <p><strong>Create Date:</strong> <span id="detailCreateDate"></span></p>
+                        <p><strong>Last Updated By:</strong> <span id="detailLastUpdateBy"></span></p>
+                        <p><strong>Last Update Date:</strong> <span id="detailLastUpdateDate"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Partner Modal -->
+<div class="modal fade" id="deletePartnerModal" tabindex="-1" aria-labelledby="deletePartnerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePartnerModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this partner?</p>
+                <form id="deletePartnerForm">
+                    <input type="hidden" id="deletePartnerId" name="Id">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        function showDetails(partnerId) {
+            $.ajax({
+                url: '@Url.Page("/Manager/Partner", "PartnerDetail")',
+                type: 'GET',
+                data: { id: partnerId },
+                success: function (data) {
+                    $('#detailCode').text(data.userCode || 'N/A');
+                    $('#detailCompany').text(data.company || 'N/A');
+                    $('#detailCompanyName').text(data.companyName || 'N/A');
+                    $('#detailCompanyType').text(data.companyType || 'N/A');
+                    $('#detailCompanyAddress').text(data.companyAddress || 'N/A');
+                    $('#detailCompanyAddressCountry').text(data.companyAddressCountry || 'N/A');
+                    $('#detailCompanyAddressCity').text(data.companyAddressCity || 'N/A');
+                    $('#detailTradingOffice').text(data.tradingOffice || 'N/A');
+                    $('#detailRepresentative').text(data.representative || 'N/A');
+                    $('#detailRepresentativePosition').text(data.representativePosition || 'N/A');
+                    $('#detailPhone').text(data.phone || 'N/A');
+                    $('#detailEmail').text(data.email || 'N/A');
+                    $('#detailMSDN').text(data.msdn || 'N/A');
+                    $('#detailMSDNBy').text(data.msdnBy || 'N/A');
+                    $('#detailIsActive').text(data.isActive ? 'Yes' : 'No');
+                    $('#detailCreateBy').text(data.createBy || 'N/A');
+                    $('#detailCreateDate').text(data.createDate ? new Date(data.createDate).toLocaleString() : 'N/A');
+                    $('#detailLastUpdateBy').text(data.lastUpdateBy || 'N/A');
+                    $('#detailLastUpdateDate').text(data.lastUpdateDate ? new Date(data.lastUpdateDate).toLocaleString() : 'N/A');
+                    $('#partnerDetailsModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading partner details:', error);
+                    alert('Không thể tải thông tin chi tiết. Vui lòng thử lại.');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Delete Partner Modal
+            document.querySelectorAll('.delete-partner').forEach(button => {
+                button.addEventListener('click', function () {
+                    const partnerId = this.getAttribute('data-id');
+                    document.querySelector('#deletePartnerId').value = partnerId;
+                });
+            });
+
+            // Handle Delete Form Submission
+            document.querySelector('#deletePartnerForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const partnerId = document.querySelector('#deletePartnerId').value;
+                console.log('Submitting Delete Partner for ID:', partnerId);
+
+                try {
+                    const response = await fetch('/Manager/Partner?handler=DeletePartner', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ Id: parseInt(partnerId) })
+                    });
+
+                    console.log('Delete Partner Response Status:', response.status);
+                    const result = await response.json();
+                    console.log('Delete Partner Response:', result);
+
+                    if (response.ok && result.success) {
+                        alert('Xóa partner thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || `Lỗi khi xóa partner (Status: ${response.status})`);
+                    }
+                } catch (error) {
+                    console.error('Delete Partner Error:', error);
+                    alert(`Lỗi khi xóa partner: ${error.message}`);
+                }
+            });
+
+            // Edit Partner Modal - Populate Form
+            document.querySelectorAll('.edit-partner').forEach(button => {
+                button.addEventListener('click', function () {
+                    const partnerId = this.getAttribute('data-id');
+                    $.ajax({
+                        url: '@Url.Page("/Manager/Partner", "PartnerDetail")',
+                        type: 'GET',
+                        data: { id: partnerId },
+                        success: function (data) {
+                            $('#editPartnerId').val(data.autoID);
+                            $('#editUserCode').val(data.userCode || '');
+                            $('#editCompany').val(data.company || '');
+                            $('#editCompanyName').val(data.companyName || '');
+                            $('#editCompanyType').val(data.companyType || '');
+                            $('#editCompanyDescription').val(data.companyDescription || '');
+                            $('#editCompanyAddress').val(data.companyAddress || '');
+                            $('#editCompanyAddressCountry').val(data.companyAddressCountry || '');
+                            $('#editCompanyAddressCity').val(data.companyAddressCity || '');
+                            $('#editTradingOffice').val(data.tradingOffice || '');
+                            $('#editRepresentative').val(data.representative || '');
+                            $('#editRepresentativePosition').val(data.representativePosition || '');
+                            $('#editPhone').val(data.phone || '');
+                            $('#editEmail').val(data.email || '');
+                            $('#editMSDN').val(data.msdn || '');
+                            $('#editMSDNBy').val(data.msdnBy || '');
+                            $('#editIsActive').val(data.isActive ? 'true' : 'false');
+                            $('#editIsDeleted').val(data.isDeleted ? 'true' : 'false');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error loading partner data for edit:', error);
+                            alert('Không thể tải dữ liệu để chỉnh sửa. Vui lòng thử lại.');
+                        }
+                    });
+                });
+            });
+
+            // Handle Add Partner Form Submission
+            document.querySelector('#addPartnerForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.IsActive = data.IsActive === 'true';
+                data.IsDeleted = data.IsDeleted === 'true';
+
+                try {
+                    const response = await fetch('/Manager/Partner?handler=AddPartner', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert('Thêm partner thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || `Lỗi khi thêm partner (Status: ${response.status})`);
+                    }
+                } catch (error) {
+                    console.error('Add Partner Error:', error);
+                    alert(`Lỗi khi thêm partner: ${error.message}`);
+                }
+            });
+
+            // Handle Edit Partner Form Submission
+            document.querySelector('#editPartnerForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                data.Id = parseInt(data.Id);
+                data.IsActive = data.IsActive === 'true';
+                data.IsDeleted = data.IsDeleted === 'true';
+
+                try {
+                    const response = await fetch('/Manager/Partner?handler=UpdatePartner', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        alert('Cập nhật partner thành công');
+                        window.location.reload();
+                    } else {
+                        alert(result.message || `Lỗi khi cập nhật partner (Status: ${response.status})`);
+                    }
+                } catch (error) {
+                    console.error('Update Partner Error:', error);
+                    alert(`Lỗi khi cập nhật partner: ${error.message}`);
+                }
+            });
+        });
+    </script>
+}

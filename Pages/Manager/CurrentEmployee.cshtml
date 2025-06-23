@@ -1,0 +1,381 @@
+﻿@page
+@model CMS.Pages.Manager.CurrentEmployeeModel
+@{
+    ViewData["Title"] = "Current Employee";
+    Layout = "_ManagerLayout";
+    var antiforgery = Html.AntiForgeryToken();
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" @(Model.Positions.Any() ? "" : "disabled")>
+        <i class="bi bi-plus-circle"></i> Add New Employee
+    </button>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+@if (Model.IsLoaded)
+{
+    <table class="table table-striped">
+        <thead class="table-primary table-bordered">
+            <tr>
+                <th>Full Name</th>
+                <th>Staff Code</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Position</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model.Employees)
+            {
+                <tr>
+                    <td>@employee.FullName</td>
+                    <td>@employee.StaffCode</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.PhoneNumber</td>
+                    <td>@(employee.Position?.PositionName ?? "N/A")</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showDetails('@employee.Id')">
+                            <i class="bi bi-eye-fill"></i>
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="editEmployee('@employee.Id')" @(Model.Positions.Any() ? "" : "disabled")>
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete('@employee.Id', '@employee.FullName')">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">No employees loaded. Please try again later.</div>
+}
+
+<!-- Modal chi tiết -->
+<div class="modal fade" id="employeeDetailsModal" tabindex="-1" aria-labelledby="employeeDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeDetailsModalLabel">Employee Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Full Name:</strong> <span id="detailFullName"></span></p>
+                <p><strong>Staff Code:</strong> <span id="detailStaffCode"></span></p>
+                <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+                <p><strong>Station:</strong> <span id="detailStation"></span></p>
+                <p><strong>Department:</strong> <span id="detailDepartment"></span></p>
+                <p><strong>Position:</strong> <span id="detailPosition"></span></p>
+                <p><strong>Branch:</strong> <span id="detailBranch"></span></p>
+                <p><strong>Company:</strong> <span id="detailCompany"></span></p>
+                <p><strong>Corporation:</strong> <span id="detailCorporation"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm mới nhân viên -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEmployeeModalLabel">Add New Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addEmployeeForm">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="addFullName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="addFullName" name="FullName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addStaffCode" class="form-label">Staff Code</label>
+                        <input type="text" class="form-control" id="addStaffCode" name="StaffCode" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="addEmail" name="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addPhone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="addPhone" name="PhoneNumber">
+                    </div>
+                    <div class="mb-3">
+                        <label for="addAddress" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="addAddress" name="Address">
+                    </div>
+                    <div class="mb-3">
+                        <label for="addStation" class="form-label">Station</label>
+                        <input type="text" class="form-control" id="addStation" name="Station">
+                    </div>
+                    <div class="mb-3">
+                        <label for="addPosition" class="form-label">Position</label>
+                        <select class="form-select" id="addPosition" name="PositionID" required>
+                            <option value="">Select Position</option>
+                            @foreach (var position in Model.Positions)
+                            {
+                                <option value="@position.AutoID">@position.PositionName</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addEmployee()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chỉnh sửa nhân viên -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmployeeModalLabel">Edit Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editEmployeeId" name="Id">
+                    <div class="mb-3">
+                        <label for="editFullName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="editFullName" name="FullName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStaffCode" class="form-label">Staff Code</label>
+                        <input type="text" class="form-control" id="editStaffCode" name="StaffCode" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPhone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="editPhone" name="PhoneNumber">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAddress" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="editAddress" name="Address">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStation" class="form-label">Station</label>
+                        <input type="text" class="form-control" id="editStation" name="Station">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPosition" class="form-label">Position</label>
+                        <select class="form-select" id="editPosition" name="PositionID" required>
+                            <option value="">Select Position</option>
+                            @foreach (var position in Model.Positions)
+                            {
+                                <option value="@position.AutoID">@position.PositionName</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateEmployee()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xóa nhân viên -->
+<div class="modal fade" id="deleteEmployeeModal" tabindex="-1" aria-labelledby="deleteEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteEmployeeModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteEmployeeName"></strong>?</p>
+                <input type="hidden" id="deleteEmployeeId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="deleteEmployee()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Show employee details in modal
+        function showDetails(employeeId) {
+            fetch(`?handler=Details&id=${employeeId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const employee = data.employee;
+                    document.getElementById('detailFullName').textContent = employee.fullName || 'N/A';
+                    document.getElementById('detailStaffCode').textContent = employee.staffCode || 'N/A';
+                    document.getElementById('detailEmail').textContent = employee.email || 'N/A';
+                    document.getElementById('detailPhone').textContent = employee.phoneNumber || 'N/A';
+                    document.getElementById('detailAddress').textContent = employee.address || 'N/A';
+                    document.getElementById('detailStation').textContent = employee.station || 'N/A';
+                    document.getElementById('detailDepartment').textContent = employee.departmentName || 'N/A';
+                    document.getElementById('detailPosition').textContent = employee.positionName || 'N/A';
+                    document.getElementById('detailBranch').textContent = employee.branchName || 'N/A';
+                    document.getElementById('detailCompany').textContent = employee.companyName || 'N/A';
+                    document.getElementById('detailCorporation').textContent = employee.corporationName || 'N/A';
+
+                    new bootstrap.Modal(document.getElementById('employeeDetailsModal')).show();
+                } else {
+                    alert(data.message || "Không thể lấy thông tin nhân viên");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Add new employee
+        function addEmployee() {
+            const form = document.getElementById('addEmployeeForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            fetch('?handler=Add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('addEmployeeModal')).hide();
+                    location.reload();
+                } else {
+                    alert(data.message || "Không thể thêm nhân viên");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Show edit employee modal
+        function editEmployee(employeeId) {
+            fetch(`?handler=Details&id=${employeeId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const employee = data.employee;
+                    document.getElementById('editEmployeeId').value = employee.id;
+                    document.getElementById('editFullName').value = employee.fullName || '';
+                    document.getElementById('editStaffCode').value = employee.staffCode || '';
+                    document.getElementById('editEmail').value = employee.email || '';
+                    document.getElementById('editPhone').value = employee.phoneNumber || '';
+                    document.getElementById('editAddress').value = employee.address || '';
+                    document.getElementById('editStation').value = employee.station || '';
+                    document.getElementById('editPosition').value = employee.autoID || '';
+
+                    new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();
+                } else {
+                    alert(data.message || "Không thể lấy thông tin nhân viên");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Update employee
+        function updateEmployee() {
+            const form = document.getElementById('editEmployeeForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            fetch('?handler=Update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editEmployeeModal')).hide();
+                    location.reload();
+                } else {
+                    alert(data.message || "Không thể cập nhật nhân viên");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Show delete confirmation modal
+        function confirmDelete(employeeId, employeeName) {
+            document.getElementById('deleteEmployeeId').value = employeeId;
+            document.getElementById('deleteEmployeeName').textContent = employeeName;
+            new bootstrap.Modal(document.getElementById('deleteEmployeeModal')).show();
+        }
+
+        // Delete employee
+        function deleteEmployee() {
+            const employeeId = document.getElementById('deleteEmployeeId').value;
+
+            fetch(`?handler=Delete&id=${employeeId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('deleteEmployeeModal')).hide();
+                    location.reload();
+                } else {
+                    alert(data.message || "Không thể xóa nhân viên");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+    </script>
+}

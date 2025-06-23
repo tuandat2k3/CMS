@@ -1,0 +1,95 @@
+﻿@page
+@model CMS.Pages.Manager.EmployeeModel
+@{
+    ViewData["Title"] = "Employee List";
+    Layout = "_AdminLayout";
+}
+
+<h1>Employee List</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Staff Code</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Department</th>
+            <th>Position</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model.Employees)
+        {
+            <tr>
+                <td>@employee.FullName</td>
+                <td>@employee.StaffCode</td>
+                <td>@employee.Email</td>
+                <td>@employee.PhoneNumber</td>
+                <td>@(employee.Department?.DepartmentName ?? "N/A")</td>
+                <td>@(employee.Position?.PositionName ?? "N/A")</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="showDetails('@employee.Id')">
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal chi tiết -->
+<div class="modal fade" id="employeeDetailsModal" tabindex="-1" aria-labelledby="employeeDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeDetailsModalLabel">Employee Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Full Name:</strong> <span id="detailFullName"></span></p>
+                <p><strong>Staff Code:</strong> <span id="detailStaffCode"></span></p>
+                <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
+                <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+                <p><strong>Station:</strong> <span id="detailStation"></span></p>
+                <p><strong>Department:</strong> <span id="detailDepartment"></span></p>
+                <p><strong>Position:</strong> <span id="detailPosition"></span></p>
+                <p><strong>Branch:</strong> <span id="detailBranch"></span></p>
+                <p><strong>Company:</strong> <span id="detailCompany"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showDetails(employeeId) {
+            $.ajax({
+                url: '@Url.Page("/Manager/Employee", "Details")',
+                type: 'GET',
+                data: { id: employeeId },
+                success: function (data) {
+                    $('#detailFullName').text(data.fullName);
+                    $('#detailStaffCode').text(data.staffCode);
+                    $('#detailEmail').text(data.email);
+                    $('#detailPhone').text(data.phoneNumber);
+                    $('#detailAddress').text(data.address);
+                    $('#detailStation').text(data.station);
+                    $('#detailDepartment').text(data.departmentName || 'N/A');
+                    $('#detailPosition').text(data.positionName || 'N/A');
+                    $('#detailBranch').text(data.branchName || 'N/A');
+                    $('#detailCompany').text(data.companyName || 'N/A');
+                    $('#employeeDetailsModal').modal('show');
+                },
+                error: function () {
+                    alert('Error loading employee details.');
+                }
+            });
+        }
+    </script>
+}

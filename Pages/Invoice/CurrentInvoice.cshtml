@@ -1,0 +1,255 @@
+﻿@page
+@model CMS.Pages.Invoice.CurrentInvoiceModel
+@{
+    ViewData["Title"] = "Invoice List";
+    Layout = "_Layout";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<div class="row">
+    <!-- Sidebar cho bộ lọc -->
+    <div class="col-md-3">
+        <div class="card p-3 mb-4">
+            <h5>Bộ lọc</h5>
+            <form method="get">
+                <div class="mb-3">
+                    <label>Ngày phát hành từ</label>
+                    <input type="date" name="StartDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="mb-3">
+                    <label>Đến ngày</label>
+                    <input type="date" name="EndDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="mb-3">
+                    <label>Giá trị (VNĐ)</label>
+                    <div>
+                        <div class="form-check">
+                            <input type="radio" name="PriceRange" value="Under1M" class="form-check-input" id="priceUnder1M" @(Model.PriceRange == "Under1M" ? "checked" : null) />
+                            <label class="form-check-label" for="priceUnder1M">Dưới 1 triệu</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="PriceRange" value="1MTo5M" class="form-check-input" id="price1MTo5M" @(Model.PriceRange == "1MTo5M" ? "checked" : null) />
+                            <label class="form-check-label" for="price1MTo5M">1 - 5 triệu</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="PriceRange" value="5MTo10M" class="form-check-input" id="price5MTo10M" @(Model.PriceRange == "5MTo10M" ? "checked" : null) />
+                            <label class="form-check-label" for="price5MTo10M">5 - 10 triệu</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="PriceRange" value="Above10M" class="form-check-input" id="priceAbove10M" @(Model.PriceRange == "Above10M" ? "checked" : null) />
+                            <label class="form-check-label" for="priceAbove10M">Trên 10 triệu</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" name="PriceRange" value="" class="form-check-input" id="priceAll" @(string.IsNullOrEmpty(Model.PriceRange) ? "checked" : null) />
+                            <label class="form-check-label" for="priceAll">Tất cả</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Lọc</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bảng hiển thị hóa đơn -->
+    <div class="col-md-9">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="bg-success bg-opacity-75 text-white">
+                    <th>Tên hóa đơn</th>
+                    <th>Ngày phát hành</th>
+                    <th>Hợp đồng</th>
+                    <th>Giá trị(VNĐ)</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Invoices.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <div class="alert alert-info" role="alert">
+                                Không có hóa đơn nào.
+                            </div>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var invoice in Model.Invoices)
+                    {
+                        <tr class="@(invoice.Status == "Paid" ? "bg-primary bg-opacity-10" : invoice.Status == "Pending" ? "bg-warning bg-opacity-10" : "")">
+                            <td>@invoice.InvoicesName</td>
+                            <td>@invoice.IssueDate?.ToString("dd/MM/yyyy")</td>
+                            <td>@invoice.Contract.ContractName</td>
+                            <td>@String.Format("{0:N0}", invoice.InvoiceValue)</td>
+                            <td>@invoice.Status</td>
+                            <td class="d-flex justify-content-center align-items-center">
+                                <a href="javascript:void(0);" class="btn btn-info btn-sm" onclick="showInvoiceDetail(@invoice.AutoID)">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Chi tiết hóa đơn (giữ nguyên) -->
+<div class="modal fade" id="invoiceDetailModal" tabindex="-1" aria-labelledby="invoiceDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="invoiceDetailModalLabel">Chi tiết hóa đơn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Tên hóa đơn:</strong>
+                        <span id="detail-invoiceName"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Hợp đồng:</strong>
+                        <span id="detail-contractName"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày phát hành:</strong>
+                        <span id="detail-issueDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày đến hạn:</strong>
+                        <span id="detail-dueDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Giá trị hóa đơn:</strong>
+                        <span id="detail-invoiceValue"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Trạng thái:</strong>
+                        <span id="detail-status"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Người tạo:</strong>
+                        <span id="detail-createBy"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày tạo:</strong>
+                        <span id="detail-createDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Cập nhật lần cuối bởi:</strong>
+                        <span id="detail-lastUpdateBy"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày cập nhật lần cuối:</strong>
+                        <span id="detail-lastUpdateDate"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>Tệp đính kèm hóa đơn:</strong>
+                        <div id="detail-invoice-files" class="mt-2">
+                            <!-- Invoice files will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // Helper function to show modal
+        function showModal(modalId) {
+            if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+                console.error("Bootstrap Modal is not available.");
+                alert("Lỗi: Không thể hiển thị modal.");
+                return;
+            }
+            const modalElement = document.getElementById(modalId);
+            if (modalElement) {
+                new bootstrap.Modal(modalElement).show();
+            } else {
+                console.error(`Modal with ID ${modalId} not found.`);
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        // Format number
+        function formatNumber(value) {
+            if (value === null || value === undefined) return '';
+            return new Intl.NumberFormat('vi-VN').format(value);
+        }
+
+        // Show Invoice Detail
+        function showInvoiceDetail(id) {
+            console.log("Opening invoice detail for ID:", id);
+            fetch(`?handler=InvoiceDetail&id=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error("Lỗi server: " + (text || res.statusText));
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const invoice = data.invoice;
+                    document.getElementById('detail-invoiceName').textContent = invoice.invoicesName || '';
+                    document.getElementById('detail-contractName').textContent = invoice.contractName || '';
+                    document.getElementById('detail-issueDate').textContent = formatDate(invoice.issueDate) || '';
+                    document.getElementById('detail-dueDate').textContent = formatDate(invoice.dueDate) || '';
+                    document.getElementById('detail-invoiceValue').textContent = formatNumber(invoice.invoiceValue) + ' VNĐ' || '';
+                    document.getElementById('detail-status').textContent = invoice.status || '';
+                    document.getElementById('detail-createBy').textContent = invoice.createBy || '';
+                    document.getElementById('detail-createDate').textContent = formatDate(invoice.createDate) || '';
+                    document.getElementById('detail-lastUpdateBy').textContent = invoice.lastUpdateBy || '';
+                    document.getElementById('detail-lastUpdateDate').textContent = formatDate(invoice.lastUpdateDate) || '';
+
+                    const invoiceFilesContainer = document.getElementById('detail-invoice-files');
+                    invoiceFilesContainer.innerHTML = '';
+                    if (invoice.invoiceFiles && invoice.invoiceFiles.length > 0) {
+                        invoice.invoiceFiles.forEach(file => {
+                            const fileElement = document.createElement('div');
+                            fileElement.className = 'mb-1';
+                            fileElement.innerHTML = `
+                                <a href="?handler=DownloadFile&id=${file.autoID}" class="text-primary" download>
+                                    <i class="bi bi-file-earmark-arrow-down"></i> ${file.fileName}
+                                </a>
+                            `;
+                            invoiceFilesContainer.appendChild(fileElement);
+                        });
+                    } else {
+                        invoiceFilesContainer.innerHTML = '<p>Không có tệp đính kèm</p>';
+                    }
+
+                    showModal('invoiceDetailModal');
+                } else {
+                    alert("Không thể lấy thông tin hóa đơn: " + (data.message || "Không xác định"));
+                }
+            })
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+    </script>
+}

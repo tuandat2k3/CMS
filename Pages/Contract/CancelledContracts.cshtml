@@ -1,0 +1,443 @@
+﻿@page
+@model CMS.Pages.Contract.CancelledContractsModel
+@{
+    ViewData["Title"] = "CancelledContract";
+    Layout = "_Layout";
+}
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+
+<div class="wrapper">
+    @if (Model.Contracts == null || !Model.Contracts.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            Hiện chưa có hợp đồng nào bị từ chối
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead class="table-primary table-bordered">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>StartDate</th>
+                    <th>EndDate</th>
+                    <th>Value(VNĐ)</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var contract in Model.Contracts)
+                {
+                    <tr>
+                        <td>@contract.ContractNumber</td>
+                        <td>@contract.ContractName</td>
+                        <td>@contract.ContractType</td>
+                        <td>@contract.StartDate?.ToString("dd/MM/yyyy")</td>
+                        <td>@contract.EndDate?.ToString("dd/MM/yyyy")</td>
+                        <td>@contract.ContractValue?.ToString("N0")</td>
+                        <td>@contract.ContractStatus</td>
+                        <td>
+                            <a href="javascript:void(0);" class="btn btn-info btn-sm" onclick="showContractDetail(@contract.AutoID)">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <a href="javascript:void(0);" class="btn btn-warning btn-sm" onclick="showEditContractModal(@contract.AutoID)">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<!-- Modal chi tiết -->
+<div class="modal fade" id="contractDetailModal" tabindex="-1" aria-labelledby="contractDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết hợp đồng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Mã hợp đồng:</strong>
+                        <span id="detail-contractNumber"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Tên hợp đồng:</strong>
+                        <span id="detail-contractName"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Loại hợp đồng:</strong>
+                        <span id="detail-contractType"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Trạng thái:</strong>
+                        <span id="detail-contractStatus"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày bắt đầu:</strong>
+                        <span id="detail-startDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày kết thúc:</strong>
+                        <span id="detail-endDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Giá trị hợp đồng:</strong>
+                        <span id="detail-contractValue"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Năm hợp đồng:</strong>
+                        <span id="detail-contractYear"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày ký hợp đồng:</strong>
+                        <span id="detail-contractDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Thời gian ký:</strong>
+                        <span id="detail-contractTime"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Đối tác:</strong>
+                        <span id="detail-partner"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Công ty:</strong>
+                        <span id="detail-company"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Chi nhánh:</strong>
+                        <span id="detail-branch"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Phòng ban:</strong>
+                        <span id="detail-department"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Người tạo:</strong>
+                        <span id="detail-createBy"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày tạo:</strong>
+                        <span id="detail-createDate"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Cập nhật lần cuối bởi:</strong>
+                        <span id="detail-lastUpdateBy"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày cập nhật lần cuối:</strong>
+                        <span id="detail-lastUpdateDate"></span>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <strong>Lý do từ chối:</strong>
+                        <span id="detail-rejectReason"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Người từ chối:</strong>
+                        <span id="detail-rejectedBy"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Ngày từ chối:</strong>
+                        <span id="detail-rejectedDate"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>Tệp đính kèm:</strong>
+                        <div id="detail-files" class="mt-2">
+                            <!-- Files will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chỉnh sửa hợp đồng -->
+<div class="modal fade" id="editContractModal" tabindex="-1" aria-labelledby="editContractModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa hợp đồng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editContractForm" enctype="multipart/form-data">
+                    <input type="hidden" id="editContractId" name="contractId">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editContractName" class="form-label">Tên hợp đồng <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editContractName" name="contractName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editContractType" class="form-label">Loại hợp đồng <span class="text-danger">*</span></label>
+                                <select class="form-select" id="editContractType" name="contractType" required>
+                                    <option value="Business">Business</option>
+                                    <option value="Financial">Financial</option>
+                                    <option value="Construction">Construction</option>
+                                    <option value="HR">HR</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editContractNumber" class="form-label">Mã hợp đồng <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editContractNumber" name="contractNumber" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editContractYear" class="form-label">Năm hợp đồng <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editContractYear" name="contractYear" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editContractValue" class="form-label">Giá trị hợp đồng</label>
+                                <input type="number" class="form-control" id="editContractValue" name="contractValue">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editContractDate" class="form-label">Ngày ký hợp đồng <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="editContractDate" name="contractDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editContractTime" class="form-label">Thời gian ký</label>
+                                <input type="text" class="form-control" id="editContractTime" name="contractTime">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editStartDate" class="form-label">Ngày bắt đầu <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="editStartDate" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEndDate" class="form-label">Ngày kết thúc <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="editEndDate" name="endDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPartnerID" class="form-label">Đối tác <span class="text-danger">*</span></label>
+                                <select class="form-select" id="editPartnerID" name="partnerID" required>
+                                    <option value="">Chọn đối tác</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editFiles" class="form-label">Tệp đính kèm</label>
+                                <input type="file" class="form-control" id="editFiles" name="files" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="updateContract()">Lưu và Gửi xét duyệt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post" style="display: none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tải danh sách đối tác
+        function loadPartners() {
+            fetch('?handler=Partners', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const partnerSelect = document.getElementById('editPartnerID');
+                partnerSelect.innerHTML = '<option value="">Chọn đối tác</option>';
+                data.forEach(partner => {
+                    const option = document.createElement('option');
+                    option.value = partner.id;
+                    option.textContent = partner.companyName;
+                    partnerSelect.appendChild(option);
+                });
+            })
+            .catch(err => console.error('Lỗi khi tải danh sách đối tác:', err));
+        }
+
+        // Show Contract Detail Modal
+        function showContractDetail(id) {
+            fetch(`?handler=ContractDetail&id=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error("Lỗi server: " + (text || res.statusText));
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const contract = data.contract;
+                    document.getElementById('detail-contractNumber').textContent = contract.contractNumber || '';
+                    document.getElementById('detail-contractName').textContent = contract.contractName || '';
+                    document.getElementById('detail-contractType').textContent = contract.contractType || '';
+                    document.getElementById('detail-contractStatus').textContent = contract.contractStatus || '';
+                    document.getElementById('detail-startDate').textContent = formatDate(contract.startDate) || '';
+                    document.getElementById('detail-endDate').textContent = formatDate(contract.endDate) || '';
+                    document.getElementById('detail-contractValue').textContent = formatNumber(contract.contractValue) + ' VNĐ' || '';
+                    document.getElementById('detail-contractYear').textContent = contract.contractYear || '';
+                    document.getElementById('detail-contractDate').textContent = contract.contractDate || '';
+                    document.getElementById('detail-contractTime').textContent = contract.contractTime || '';
+                    document.getElementById('detail-partner').textContent = contract.partnerName || '';
+                    document.getElementById('detail-company').textContent = contract.companyName || '';
+                    document.getElementById('detail-branch').textContent = contract.branchName || '';
+                    document.getElementById('detail-department').textContent = contract.departmentName || '';
+                    document.getElementById('detail-createBy').textContent = contract.createBy || '';
+                    document.getElementById('detail-createDate').textContent = formatDate(contract.createDate) || '';
+                    document.getElementById('detail-lastUpdateBy').textContent = contract.lastUpdateBy || '';
+                    document.getElementById('detail-lastUpdateDate').textContent = formatDate(contract.lastUpdateDate) || '';
+                    document.getElementById('detail-rejectReason').textContent = contract.rejectReason || 'Không có lý do';
+                    document.getElementById('detail-rejectedBy').textContent = contract.rejectedBy || 'Không xác định';
+                    document.getElementById('detail-rejectedDate').textContent = formatDate(contract.rejectedDate) || 'Không xác định';
+
+                    // Populate files
+                    const filesContainer = document.getElementById('detail-files');
+                    filesContainer.innerHTML = '';
+                    if (contract.files && contract.files.length > 0) {
+                        contract.files.forEach(file => {
+                            const fileElement = document.createElement('div');
+                            fileElement.className = 'mb-1';
+                            fileElement.innerHTML = `
+                                <a href="?handler=DownloadFile&id=${file.autoID}" class="text-primary" download>
+                                    <i class="bi bi-file-earmark-arrow-down"></i> ${file.fileName}
+                                </a>
+                            `;
+                            filesContainer.appendChild(fileElement);
+                        });
+                    } else {
+                        filesContainer.innerHTML = '<p>Không có tệp đính kèm</p>';
+                    }
+
+                    new bootstrap.Modal(document.getElementById('contractDetailModal')).show();
+                } else {
+                    alert("Không thể lấy thông tin hợp đồng: " + (data.message || "Không xác định"));
+                }
+            })
+            .catch(err => {
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Show Edit Contract Modal
+        function showEditContractModal(id) {
+            fetch(`?handler=ContractDetail&id=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error("Lỗi server: " + (text || res.statusText));
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const contract = data.contract;
+                    document.getElementById('editContractId').value = id;
+                    document.getElementById('editContractName').value = contract.contractName || '';
+                    document.getElementById('editContractType').value = contract.contractType || '';
+                    document.getElementById('editContractNumber').value = contract.contractNumber || '';
+                    document.getElementById('editContractYear').value = contract.contractYear || '';
+                    document.getElementById('editContractValue').value = contract.contractValue || '';
+                    document.getElementById('editContractDate').value = contract.contractDate ? new Date(contract.contractDate).toISOString().split('T')[0] : '';
+                    document.getElementById('editContractTime').value = contract.contractTime || '';
+                    document.getElementById('editStartDate').value = contract.startDate ? new Date(contract.startDate).toISOString().split('T')[0] : '';
+                    document.getElementById('editEndDate').value = contract.endDate ? new Date(contract.endDate).toISOString().split('T')[0] : '';
+                    document.getElementById('editFiles').value = ''; // Reset file input
+
+                    loadPartners();
+                    setTimeout(() => {
+                        document.getElementById('editPartnerID').value = contract.partnerID || '';
+                    }, 500);
+
+                    new bootstrap.Modal(document.getElementById('editContractModal')).show();
+                } else {
+                    alert("Không thể lấy thông tin hợp đồng: " + (data.message || "Không xác định"));
+                }
+            })
+            .catch(err => {
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Update Contract
+        function updateContract() {
+            const form = document.getElementById('editContractForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = new FormData(form);
+            formData.append('contractId', document.getElementById('editContractId').value);
+
+            fetch("?handler=UpdateContract", {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        throw new Error("Lỗi server: " + (text || res.statusText));
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert("Cập nhật hợp đồng thành công và đã gửi để xét duyệt!");
+                    location.reload();
+                } else {
+                    alert("Cập nhật hợp đồng thất bại: " + (data.message || "Không xác định"));
+                }
+            })
+            .catch(err => {
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        // Helper function to format number
+        function formatNumber(value) {
+            if (value === null || value === undefined) return '';
+            return new Intl.NumberFormat('vi-VN').format(value);
+        }
+    </script>
+}

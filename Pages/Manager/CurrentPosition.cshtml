@@ -1,0 +1,368 @@
+﻿@page
+@model CMS.Pages.Manager.CurrentPositionModel
+@{
+    ViewData["Title"] = "Manage Positions";
+    Layout = "_ManagerLayout";
+    var antiforgery = Html.AntiForgeryToken();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Manage Positions</h1>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPositionModal">
+        <i class="bi bi-plus-circle"></i> Add New Position
+    </button>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+@if (Model.IsLoaded)
+{
+    <table class="table table-striped">
+        <thead class="table-primary table-bordered">
+            <tr>
+                <th>Position Name</th>
+                <th>Position Symbol</th>
+                <th>Description</th>
+                <th>Is Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var position in Model.Positions)
+            {
+                <tr>
+                    <td>@position.PositionName</td>
+                    <td>@position.PositionSymbol</td>
+                    <td>@position.Descriptions</td>
+                    <td>@(position.IsActive ?? false ? "Yes" : "No")</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showDetails('@position.AutoID')">
+                            <i class="bi bi-eye-fill"></i>
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="editPosition('@position.AutoID')">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete('@position.AutoID', '@position.PositionName')">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">No positions loaded. Please try again later.</div>
+}
+
+<!-- Modal for Position Details -->
+<div class="modal fade" id="positionDetailsModal" tabindex="-1" aria-labelledby="positionDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="positionDetailsModalLabel">Position Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Position Name:</strong> <span id="detailPositionName"></span></p>
+                <p><strong>Position Symbol:</strong> <span id="detailPositionSymbol"></span></p>
+                <p><strong>Description:</strong> <span id="detailDescription"></span></p>
+                <p><strong>Is Active:</strong> <span id="detailIsActive"></span></p>
+                <p><strong>Department:</strong> <span id="detailDepartment"></span></p>
+                <p><strong>Create Date:</strong> <span id="detailCreateDate"></span></p>
+                <p><strong>Create By:</strong> <span id="detailCreateBy"></span></p>
+                <p><strong>Last Modified By:</strong> <span id="detailLastModifiedBy"></span></p>
+                <p><strong>Last Modified Date:</strong> <span id="detailLastModifiedDate"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Adding Position -->
+<div class="modal fade" id="addPositionModal" tabindex="-1" aria-labelledby="addPositionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPositionModalLabel">Add New Position</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="addErrorMessage" class="alert alert-danger d-none"></div>
+                <form id="addPositionForm">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="addPositionName" class="form-label">Position Name</label>
+                        <input type="text" class="form-control" id="addPositionName" name="PositionName" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="addPositionSymbol" class="form-label">Position Symbol</label>
+                        <input type="text" class="form-control" id="addPositionSymbol" name="PositionSymbol" required maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="addDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="addDescription" name="Descriptions"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addIsActive" class="form-label">Is Active</label>
+                        <input type="checkbox" id="addIsActive" name="IsActive" checked>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addPosition()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Editing Position -->
+<div class="modal fade" id="editPositionModal" tabindex="-1" aria-labelledby="editPositionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPositionModalLabel">Edit Position</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="editErrorMessage" class="alert alert-danger d-none"></div>
+                <form id="editPositionForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editPositionId" name="AutoID">
+                    <div class="mb-3">
+                        <label for="editPositionName" class="form-label">Position Name</label>
+                        <input type="text" class="form-control" id="editPositionName" name="PositionName" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPositionSymbol" class="form-label">Position Symbol</label>
+                        <input type="text" class="form-control" id="editPositionSymbol" name="PositionSymbol" required maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="Descriptions"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editIsActive" class="form-label">Is Active</label>
+                        <input type="checkbox" id="editIsActive" name="IsActive">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updatePosition()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Delete Confirmation -->
+<div class="modal fade" id="deletePositionModal" tabindex="-1" aria-labelledby="deletePositionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePositionModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deletePositionName"></strong>?</p>
+                <input type="hidden" id="deletePositionId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="deletePosition()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Show position details in modal
+        function showDetails(positionId) {
+            fetch(`?handler=Details&id=${positionId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const position = data.position;
+                    document.getElementById('detailPositionName').textContent = position.positionName || 'N/A';
+                    document.getElementById('detailPositionSymbol').textContent = position.positionSymbol || 'N/A';
+                    document.getElementById('detailDescription').textContent = position.descriptions || 'N/A';
+                    document.getElementById('detailIsActive').textContent = position.isActive ? 'Yes' : 'No';
+                    document.getElementById('detailDepartment').textContent = position.departmentName || 'N/A';
+                    document.getElementById('detailCreateDate').textContent = position.createDate || 'N/A';
+                    document.getElementById('detailCreateBy').textContent = position.createBy || 'N/A';
+                    document.getElementById('detailLastModifiedBy').textContent = position.lastModifiedBy || 'N/A';
+                    document.getElementById('detailLastModifiedDate').textContent = position.lastModifiedDate || 'N/A';
+
+                    new bootstrap.Modal(document.getElementById('positionDetailsModal')).show();
+                } else {
+                    alert(data.message || "Không thể lấy thông tin vị trí");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Add new position
+        function addPosition() {
+            const form = document.getElementById('addPositionForm');
+            const errorMessage = document.getElementById('addErrorMessage');
+            errorMessage.classList.add('d-none');
+            errorMessage.textContent = '';
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            data.IsActive = form.querySelector('#addIsActive').checked;
+
+            fetch('?handler=Add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('addPositionModal')).hide();
+                    location.reload();
+                } else {
+                    errorMessage.textContent = data.message || "Không thể thêm vị trí";
+                    errorMessage.classList.remove('d-none');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                errorMessage.textContent = "Lỗi: " + err.message;
+                errorMessage.classList.remove('d-none');
+            });
+        }
+
+        // Show edit position modal
+        function editPosition(positionId) {
+            const errorMessage = document.getElementById('editErrorMessage');
+            errorMessage.classList.add('d-none');
+            errorMessage.textContent = '';
+
+            fetch(`?handler=Details&id=${positionId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const position = data.position;
+                    document.getElementById('editPositionId').value = position.autoID;
+                    document.getElementById('editPositionName').value = position.positionName || '';
+                    document.getElementById('editPositionSymbol').value = position.positionSymbol || '';
+                    document.getElementById('editDescription').value = position.descriptions || '';
+                    document.getElementById('editIsActive').checked = position.isActive;
+
+                    new bootstrap.Modal(document.getElementById('editPositionModal')).show();
+                } else {
+                    alert(data.message || "Không thể lấy thông tin vị trí");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+
+        // Update position
+        function updatePosition() {
+            const form = document.getElementById('editPositionForm');
+            const errorMessage = document.getElementById('editErrorMessage');
+            errorMessage.classList.add('d-none');
+            errorMessage.textContent = '';
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            data.IsActive = form.querySelector('#editIsActive').checked;
+
+            fetch('?handler=Update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editPositionModal')).hide();
+                    location.reload();
+                } else {
+                    errorMessage.textContent = data.message || "Không thể cập nhật vị trí";
+                    errorMessage.classList.remove('d-none');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                errorMessage.textContent = "Lỗi: " + err.message;
+                errorMessage.classList.remove('d-none');
+            });
+        }
+
+        // Show delete confirmation modal
+        function confirmDelete(positionId, positionName) {
+            document.getElementById('deletePositionId').value = positionId;
+            document.getElementById('deletePositionName').textContent = positionName;
+            new bootstrap.Modal(document.getElementById('deletePositionModal')).show();
+        }
+
+        // Delete position
+        function deletePosition() {
+            const positionId = document.getElementById('deletePositionId').value;
+
+            fetch(`?handler=Delete&id=${positionId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('deletePositionModal')).hide();
+                    location.reload();
+                } else {
+                    alert(data.message || "Không thể xóa vị trí");
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert("Lỗi: " + err.message);
+            });
+        }
+    </script>
+}

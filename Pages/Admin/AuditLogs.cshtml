@@ -1,0 +1,187 @@
+﻿@page
+@model CMS.Pages.AuditLogs.IndexModel
+@{
+    ViewData["Title"] = "Audit Logs";
+    Layout = "_AdminLayout";
+}
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Người dùng</label>
+        <select class="form-select" asp-for="UserId" name="UserId">
+            <option value="">-- Tất cả --</option>
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id" selected="@(user.Id == Model.UserId)">
+                    @user.FullName (@user.UserName)
+                </option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Tên bảng</label>
+        <select class="form-select" asp-for="TableName" name="TableName">
+            <option value="">-- Tất cả --</option>
+            <option value="Contracts" selected="@(Model.TableName == "Contracts")">Contracts</option>
+            <option value="Files" selected="@(Model.TableName == "Files")">Files</option>
+            <option value="Invoices" selected="@(Model.TableName == "Invoices")">Invoices</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Hành động</label>
+        <select class="form-select" asp-for="Action" name="Action">
+            <option value="">-- Tất cả --</option>
+            <option value="Create" selected="@(Model.Action == "Create")">Create</option>
+            <option value="Update" selected="@(Model.Action == "Update")">Update</option>
+            <option value="Delete" selected="@(Model.Action == "Delete")">Delete</option>
+            <option value="Download" selected="@(Model.Action == "Download")">Download</option>
+            <option value="View" selected="@(Model.Action == "View")">View</option>
+            <option value="ReSign" selected="@(Model.Action == "ReSign")">ReSign</option>
+            <option value="Approve" selected="@(Model.Action == "Approve")">Approve</option>
+            <option value="Reject" selected="@(Model.Action == "Reject")">Reject</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Từ ngày</label>
+        <input type="date" class="form-control" asp-for="FromDate" name="FromDate" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Đến ngày</label>
+        <input type="date" class="form-control" asp-for="ToDate" name="ToDate" />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr class="text-center">
+            <th>Time</th>
+            <th>User</th>
+            <th>Table</th>
+            <th>Action</th>
+            <th>Note</th>
+            <th>Detail</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.AuditLogs)
+        {
+            <tr class="text-center">
+                <td>@item.CreateDate?.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                <td>@item.UserFullName</td>
+                <td>@item.Tables</td>
+                <td>@item.Action</td>
+                <td>@item.Note</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-info" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#detailsModal" 
+                            data-id="@item.AutoID">
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- PHÂN TRANG -->
+<nav aria-label="Page navigation example" class="d-flex justify-content-center">
+    <ul class="pagination">
+        @if (Model.PageNumber > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="?PageNumber=1@(Model.UserId != null ? "&UserId=" + Model.UserId : "")@(Model.TableName != null ? "&TableName=" + Model.TableName : "")@(Model.Action != null ? "&Action=" + Model.Action : "")@(Model.FromDate != null ? "&FromDate=" + Model.FromDate?.ToString("yyyy-MM-dd") : "")@(Model.ToDate != null ? "&ToDate=" + Model.ToDate?.ToString("yyyy-MM-dd") : "")">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?PageNumber=@(Model.PageNumber - 1)@(Model.UserId != null ? "&UserId=" + Model.UserId : "")@(Model.TableName != null ? "&TableName=" + Model.TableName : "")@(Model.Action != null ? "&Action=" + Model.Action : "")@(Model.FromDate != null ? "&FromDate=" + Model.FromDate?.ToString("yyyy-MM-dd") : "")@(Model.ToDate != null ? "&ToDate=" + Model.ToDate?.ToString("yyyy-MM-dd") : "")"><span aria-hidden="true">&laquo;</span></a>
+            </li>
+        }
+        @{
+            int maxPagesToShow = 5;
+            int startPage = Math.Max(1, Model.PageNumber - maxPagesToShow / 2);
+            int endPage = Math.Min(Model.TotalPages, startPage + maxPagesToShow - 1);
+            if (endPage - startPage + 1 < maxPagesToShow)
+            {
+                startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+            }
+        }
+        @for (int i = startPage; i <= endPage; i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" href="?PageNumber=@i@(Model.UserId != null ? "&UserId=" + Model.UserId : "")@(Model.TableName != null ? "&TableName=" + Model.TableName : "")@(Model.Action != null ? "&Action=" + Model.Action : "")@(Model.FromDate != null ? "&FromDate=" + Model.FromDate?.ToString("yyyy-MM-dd") : "")@(Model.ToDate != null ? "&ToDate=" + Model.ToDate?.ToString("yyyy-MM-dd") : "")">@i</a>
+            </li>
+        }
+        @if (endPage < Model.TotalPages)
+        {
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+        }
+        <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="@(Model.PageNumber < Model.TotalPages ? $"?PageNumber={Model.PageNumber + 1}{(Model.UserId != null ? "&UserId=" + Model.UserId : "")}{(Model.TableName != null ? "&TableName=" + Model.TableName : "")}{(Model.Action != null ? "&Action=" + Model.Action : "")}{(Model.FromDate != null ? "&FromDate=" + Model.FromDate?.ToString("yyyy-MM-dd") : "")}{(Model.ToDate != null ? "&ToDate=" + Model.ToDate?.ToString("yyyy-MM-dd") : "")}" : "#")"><span aria-hidden="true">&raquo;</span></a>
+        </li>
+        <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="@(Model.PageNumber < Model.TotalPages ? $"?PageNumber={Model.TotalPages}{(Model.UserId != null ? "&UserId=" + Model.UserId : "")}{(Model.TableName != null ? "&TableName=" + Model.TableName : "")}{(Model.Action != null ? "&Action=" + Model.Action : "")}{(Model.FromDate != null ? "&FromDate=" + Model.FromDate?.ToString("yyyy-MM-dd") : "")}{(Model.ToDate != null ? "&ToDate=" + Model.ToDate?.ToString("yyyy-MM-dd") : "")}" : "#")">Last</a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Chi tiết Audit Log</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Thời gian</dt>
+                    <dd class="col-sm-9" id="modal-time"></dd>
+                    <dt class="col-sm-3">Người dùng</dt>
+                    <dd class="col-sm-9" id="modal-user"></dd>
+                    <dt class="col-sm-3">Tên bảng</dt>
+                    <dd class="col-sm-9" id="modal-table"></dd>
+                    <dt class="col-sm-3">Hành động</dt>
+                    <dd class="col-sm-9" id="modal-action"></dd>
+                    <dt class="col-sm-3">Ghi chú</dt>
+                    <dd class="col-sm-9" id="modal-note"></dd>
+                    <dt class="col-sm-3">Chi tiết</dt>
+                    <dd class="col-sm-9" id="modal-details"></dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var detailsModal = document.getElementById('detailsModal');
+        detailsModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var auditLogId = button.getAttribute('data-id');
+
+            // Perform AJAX request to fetch details
+            fetch('/Admin/AuditLogs?handler=Details&autoId=' + auditLogId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('modal-time').textContent = data.createDate || 'N/A';
+                    document.getElementById('modal-user').textContent = data.userFullName || 'N/A';
+                    document.getElementById('modal-table').textContent = data.tables || 'N/A';
+                    document.getElementById('modal-action').textContent = data.action || 'N/A';
+                    document.getElementById('modal-note').textContent = data.note || 'N/A';
+                    document.getElementById('modal-details').textContent = data.details || 'No additional details available';
+                })
+                .catch(error => {
+                    console.error('Error fetching audit log details:', error);
+                    document.getElementById('modal-details').textContent = 'Error loading details';
+                });
+        });
+    </script>
+}
