@@ -168,11 +168,7 @@ namespace CMS.Pages.Manager
                     IsActive = model.IsActive,
                     CreateBy = currentUser.FullName,
                     CreateDate = DateTime.Now,
-<<<<<<< HEAD
                     LastModifiedBy = currentUser.FullName,
-=======
-                    LastModifiedBy = currentUser.Id,
->>>>>>> a7407e686b3fa96b580a3e3dfd836333f5c65d2a
                     LastModifiedDate = DateTime.Now
                 };
 
@@ -240,11 +236,11 @@ namespace CMS.Pages.Manager
                 company.HomePhone = model.HomePhone?.Trim();
                 company.Representative = model.Representative?.Trim();
                 company.IsActive = model.IsActive;
-<<<<<<< HEAD
+
                 company.LastModifiedBy = currentUser.FullName;
-=======
+
                 company.LastModifiedBy = currentUser.Id;
->>>>>>> a7407e686b3fa96b580a3e3dfd836333f5c65d2a
+
                 company.LastModifiedDate = DateTime.Now;
 
                 await _context.SaveChangesAsync();
