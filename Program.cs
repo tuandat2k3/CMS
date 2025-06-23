@@ -1,5 +1,6 @@
 using CMS.Configuration;
 using CMS.Data;
+using CMS.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ builder.Services.AddLogging(logging =>
 // Add services to the container.
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.Configure<AdminAccounts>(builder.Configuration.GetSection("AdminAccounts"));
 
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
